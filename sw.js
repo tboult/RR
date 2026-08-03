@@ -1,5 +1,12 @@
-const CACHE_NAME = 'random-robin-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
+const CACHE_NAME = 'random-robin-v3';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  './RR.png',
+  './icon-192.png',
+  './icon-512.png'
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
