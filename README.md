@@ -1,14 +1,14 @@
-# Round-Robin-Dealer
-A self-contained html5 based round robin generates a RR and "deals" the assignments to people via the screen as if they were cards.  Its customization use local storage so works offline 
-
-A lightweight, mobile-first Progressive Web App (PWA) designed to manage pickleball group rotations, randomized court assignments, and game match timers. Runs directly in any web browser and functions **100% offline** with zero external dependencies.
+# Random Robin
+A lightweight, mobile-first Progressive Web App (PWA) designed to manage pickleball or other 4-player court  rotations, with randomized court assignments, and game match timers. Runs directly in any web browser and functions **100% offline** with zero external dependencies.
+This ia a self-contained html5 based  on radom assigns rounds for court play, support pseudo-round robin pickleball or other court assignments. It  generates  and shuffles  court assignments and shows the court assignments to people via the screen for rapid assignments without names or remembering numbers. It is customiazable and saves state and can change # players and courts each assignment. It handles byes as well. 
 
 ---
 
 ## ✨ Features
 
 * 📱 **Add to Home Screen (PWA):** Built-in install prompts for Android and iOS devices. Save it to your phone's home screen to run like a native app.
-* 📶 **100% Offline Support:** Uses an integrated Service Worker and Web App Manifest so you can run games on courts without cell coverage or Wi-Fi.
+* 📶 **100% Offline Support:** Uses an integrated Service Worker and Web App Manifest so you can run games on courts without cell coverage or Wi-Fi and saves configurations to local storage so you don't have to reconfigure our allowed courts each time, and different captains can keep different assignments. 
+* 
 * 🔀 **Smart Randomizer Algorithm:**
 * Generates balanced rotations for Servers, Receivers, and Byes/Breaks.
 * Features an active post-processing filter to minimize back-to-back duplicate assignments for individual players.
@@ -22,24 +22,6 @@ A lightweight, mobile-first Progressive Web App (PWA) designed to manage pickleb
 * 💾 **Auto-Saving Preferences:** Automatically remembers your facility’s court counts, checked active courts, and timer settings using browser `localStorage`.
 * 🎯 **Large, High-Contrast UI:** Touch-friendly display designed for quick tap navigation on court.
 
----
-
-## 🚀 Quick Start & Hosting on GitHub Pages
-
-Because the app is built as a self-contained single file, hosting it on GitHub Pages takes under a minute:
-
-1. **Create Repository:** Create a new public or private repository on GitHub (e.g., `pickleball-round-robin`).
-2. **Upload Code:** Save the app code as `index.html` in the root folder of your repository alongside this `README.md`.
-3. **Enable GitHub Pages:**
-* Go to your repository **Settings**.
-* Navigate to **Pages** in the left sidebar.
-* Under **Build and deployment** > **Branch**, select `main` (or `master`) and `/ (root)`.
-* Click **Save**.
-
-
-4. **Access App:** Your live web app URL will be available at `https://<your-username>.github.io/<repository-name>/`.
-
----
 
 ## 📱 How to Install on Your Phone
 
@@ -59,15 +41,16 @@ Because the app is built as a self-contained single file, hosting it on GitHub P
 ## 📖 How to Use
 
 1. **Configure Setup:**
-* **#Players:** Enter the total number of players present.
+* **#Players:** Enter the total number of players present. Can Change each game. 
 * **Game #:** Auto-increments after each round. Tap *Reset Game #* to start back at Game 1.
 * **Timer (Minutes):** Set desired match duration.
 * **Max Courts & Selection:** Specify total facility courts and check off which courts are open for play.
 
 
 2. **Run Game Assignments:**
+* Have players form a line. 
 * Tap **Start Assignments**.
-* Tap anywhere on the screen (or use keyboard keys) to step through each player's court and role assignment (Server, Receiver, or Bye).
+* Tap anywhere on the screen (or use keyboard keys) to step through and show each player's court and role assignment (Server, Receiver, or Bye).
 
 
 3. **Match Countdown:**
@@ -81,7 +64,8 @@ Because the app is built as a self-contained single file, hosting it on GitHub P
 
 ## 🛠️ Tech Stack
 
-* **HTML5 / CSS3:** Flexbox and CSS Grid layout styled for modern mobile displays.
+* **HTML5 / CSS3:** Flexbox and CSS Grid layout styled for modern mobile displays.   Variables let you change many aspects. 
+
 * **Vanilla JavaScript (ES6+):** Zero external libraries or frameworks (React, Vue, jQuery, etc.).
 * **Web Audio API:** Generates real-time audio frequencies for timer chimes.
 * **Service Worker:** Offline asset caching engine.
@@ -90,4 +74,4 @@ Because the app is built as a self-contained single file, hosting it on GitHub P
 
 ## 📄 License
 
-This project is open-source and available under theGPL V3. Feel free to fork, modify, and share!
+This project is open-source and available under the GPL v3. Feel free to fork, modify, and share! 
