@@ -823,6 +823,37 @@
       return globalAudioCtx;
     }
 
+    let audioCtx = null;
+
+    // Unlocks audio for Installed PWAs on the first tap anywhere
+    function unlockAudioEngine() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      // Play a tiny silent buffer to force unlock hardware audio in Standalone PWA mode
+      try {
+        const buffer = audioCtx.createBuffer(1, 1, 22050);
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioCtx.destination);
+        source.start(0);
+      } catch (e) {
+        console.log("Audio unlock attempt:", e);
+      }
+
+      // Remove listeners once audio hardware is activated
+      window.removeEventListener('touchstart', unlockAudioEngine);
+      window.removeEventListener('click', unlockAudioEngine);
+    }
+
+    // Listen for first interaction
+    window.addEventListener('touchstart', unlockAudioEngine, { passive: true });
+    window.addEventListener('click', unlockAudioEngine);
 
     function playSelectedSound() {
       const audioCtx = getAudioContext();
@@ -1075,9 +1106,16 @@
         // Reset & start timer if user hasn't started it
         const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
         if (!isTimerRunning) {
-          playTimeSeconds = mins * 60;
-          remainingSeconds = playTimeSeconds;
-          updateTimerDisplay();
+              // Wake up audio context on timer start
+              unlockAudioEngine();
+              
+              // Request WakeLock so phone screen doesn't sleep and stop the timer (optional but recommended for PWAs)
+              if ('wakeLock' in navigator) {
+                  navigator.wakeLock.request('screen').catch(() => {});
+              }
+            playTimeSeconds = mins * 60;
+            remainingSeconds = playTimeSeconds;
+            updateTimerDisplay();
         }
       }
     }
@@ -1190,92 +1228,84 @@
 
 
     function playSound() {
-      try {
-        // 1. Initialize audio context if not created yet
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      // Fallback check if unlock didn't run yet
+      if (!audioCtx) {
+        unlockAudioEngine();
+      } else if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      if (!audioCtx) return;
+
+      // 1. Get chosen sound
+      let soundType = 'chime';
+      const selectElem = document.getElementById('soundSelect');
+      if (selectElem && selectElem.value) {
+        soundType = selectElem.value;
+      } else {
+        const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (saved) {
+          try { soundType = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
         }
-        // Resume audio context if browser suspended it
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+      }
 
-        // 2. Read selected sound from dropdown OR saved settings
-        let soundType = 'chime';
-        const selectElem = document.getElementById('soundSelect');
-        if (selectElem && selectElem.value) {
-          soundType = selectElem.value;
-        } else {
-          const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
-          if (saved) {
-            try { 
-              soundType = JSON.parse(saved).soundChoice || 'chime'; 
-            } catch(e) {}
-          }
-        }
+      const now = audioCtx.currentTime;
 
-        const now = audioCtx.currentTime;
+      // 2. Play preset
+      if (soundType === 'buzzer') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.8);
 
-        // 3. Synthesize chosen sound
-        if (soundType === 'buzzer') {
-          // Low Sawtooth Game Buzzer
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(150, now);
-          gain.gain.setValueAtTime(0.5, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.8);
-
-        } else if (soundType === 'bell') {
-          // Double Bell Chime
-          [523.25, 659.25].forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + (idx * 0.15));
-            gain.gain.setValueAtTime(0.5, now + (idx * 0.15));
-            gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.15) + 0.6);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now + (idx * 0.15));
-            osc.stop(now + (idx * 0.15) + 0.6);
-          });
-
-        } else if (soundType === 'siren') {
-          // High Siren Sweep
+      } else if (soundType === 'bell') {
+        [523.25, 659.25].forEach((freq, idx) => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(600, now);
-          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
-          gain.gain.setValueAtTime(0.4, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.frequency.setValueAtTime(freq, now + (idx * 0.15));
+          gain.gain.setValueAtTime(0.5, now + (idx * 0.15));
+          gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.15) + 0.6);
           osc.connect(gain);
           gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.5);
+          osc.start(now + (idx * 0.15));
+          osc.stop(now + (idx * 0.15) + 0.6);
+        });
 
-        } else {
-          // Soft Chime (Default)
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, now);
-          gain.gain.setValueAtTime(0.5, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.5);
-        }
-      } catch (e) {
-        console.log("Audio synthesis error:", e);
+      } else if (soundType === 'siren') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 1.5);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.5);
+
+      } else {
+        // Default Soft Chime
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.5);
       }
     }
+
 
     function testSound() {
       if (navigator.vibrate) {
