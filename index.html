@@ -141,7 +141,31 @@
       height: 20px;
       margin-right: 12px;
     }
-    
+
+    #court-list {
+      position: relative;
+      z-index: 1; /* Ensures it sits above hidden backdrops */
+    }
+
+    .court-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .court-item input[type="checkbox"] {
+      pointer-events: auto !important; /* Forces interactivity */
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+    }
+
+    .court-item label {
+      cursor: pointer;
+      user-select: none; /* Prevents text highlighting when clicking rapidly */
+    }    
+
     .btn {
       padding: 12px;
       font-size: 1.3rem;
@@ -424,7 +448,7 @@
     <div class="setup-container">
       <div class="header-branding">
         <img src="icon-192.png" alt="Random Robin Logo" class="app-logo-img" onerror="this.style.display='none'">
-        <h1>Random Robin</h1>
+        <h1 id="app-heading">Random Robin</h1>
       </div>
       
        
@@ -783,11 +807,13 @@
       };
 
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+      const selectedCourts = [];
+      document.querySelectorAll('#court-list input[type="checkbox"]:checked').forEach(cb => {
+          selectedCourts.push(parseInt(cb.dataset.courtNum, 10));
+      });
 
-      // MAKE SURE YOUR COURT CHECKBOX GENERATOR IS STILL CALLED HERE IF NEEDED:
-      if (typeof generateCheckboxes === 'function') {
-        generateCheckboxes();
-      }
+      localStorage.setItem(STORAGE_KEY_COURTS, JSON.stringify(selectedCourts));
+
     }
 
     function loadSettings() {
@@ -810,42 +836,44 @@
     }
 
 
-        /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
+    /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
+
+    // Declare global audioCtx if not already declared higher up in your script
 
     function getAudioContext() {
-      if (!globalAudioCtx) {
-        globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (globalAudioCtx.state === 'suspended') {
-        globalAudioCtx.resume();
-      }
-      return globalAudioCtx;
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        return audioCtx;
     }
 
     // Unlocks audio for Installed PWAs on the first tap anywhere
     function unlockAudioEngine() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
 
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
 
-      // Play a tiny silent buffer to force unlock hardware audio in Standalone PWA mode
-      try {
-        const buffer = audioCtx.createBuffer(1, 1, 22050);
-        const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(audioCtx.destination);
-        source.start(0);
-      } catch (e) {
-        console.log("Audio unlock attempt:", e);
-      }
+        // Play a tiny silent buffer to force unlock hardware audio in Standalone PWA mode
+        try {
+            const buffer = audioCtx.createBuffer(1, 1, 22050);
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
+        } catch (e) {
+            console.log("Audio unlock attempt:", e);
+        }
 
-      // Remove listeners once audio hardware is activated
-      window.removeEventListener('touchstart', unlockAudioEngine);
-      window.removeEventListener('click', unlockAudioEngine);
+        // Remove listeners once audio hardware is activated
+        window.removeEventListener('touchstart', unlockAudioEngine);
+        window.removeEventListener('click', unlockAudioEngine);
     }
 
     // Listen for first interaction
@@ -853,87 +881,85 @@
     window.addEventListener('click', unlockAudioEngine);
 
     function playSelectedSound() {
-      const audioCtx = getAudioContext();
+        const activeCtx = getAudioContext();
 
-      // 1. Get sound choice from dropdown OR saved memory
-      let soundType = 'chime';
-      const selectElem = document.getElementById('soundSelect');
+        // 1. Get sound choice from dropdown OR saved memory
+        let soundType = 'chime';
+        const selectElem = document.getElementById('soundSelect');
 
-      if (selectElem && selectElem.value) {
-        soundType = selectElem.value;
-      } else {
-        const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
-        if (saved) {
-          try { soundType = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
-        }
-      }
-
-      // 2. Play sound
-      audioCtx.resume().then(() => {
-        if (soundType === 'buzzer') {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.8);
-
-        } else if (soundType === 'bell') {
-          [523.25, 659.25].forEach((freq, idx) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.15));
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + (idx * 0.15));
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (idx * 0.15) + 0.6);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime + (idx * 0.15));
-            osc.stop(audioCtx.currentTime + (idx * 0.15) + 0.6);
-          });
-
-        } else if (soundType === 'siren') {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.4);
-          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.5);
-
+        if (selectElem && selectElem.value) {
+            soundType = selectElem.value;
         } else {
-          // Default Soft Chime
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.5);
-        }
-      });
+            const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+            if (saved) {
+                try { soundType = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
+            }
         }
 
+        // 2. Play sound
+        activeCtx.resume().then(() => {
+            if (soundType === 'buzzer') {
+                const osc = activeCtx.createOscillator();
+                const gain = activeCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, activeCtx.currentTime);
+                gain.gain.setValueAtTime(0.3, activeCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(activeCtx.destination);
+                osc.start();
+                osc.stop(activeCtx.currentTime + 0.8);
 
+            } else if (soundType === 'bell') {
+                [523.25, 659.25].forEach((freq, idx) => {
+                    const osc = activeCtx.createOscillator();
+                    const gain = activeCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, activeCtx.currentTime + (idx * 0.15));
+                    gain.gain.setValueAtTime(0.3, activeCtx.currentTime + (idx * 0.15));
+                    gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + (idx * 0.15) + 0.6);
+                    osc.connect(gain);
+                    gain.connect(activeCtx.destination);
+                    osc.start(activeCtx.currentTime + (idx * 0.15));
+                    osc.stop(activeCtx.currentTime + (idx * 0.15) + 0.6);
+                });
+
+            } else if (soundType === 'siren') {
+                const osc = activeCtx.createOscillator();
+                const gain = activeCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, activeCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, activeCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.2, activeCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(activeCtx.destination);
+                osc.start();
+                osc.stop(activeCtx.currentTime + 0.5);
+
+            } else {
+                // Default Soft Chime
+                const osc = activeCtx.createOscillator();
+                const gain = activeCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, activeCtx.currentTime);
+                gain.gain.setValueAtTime(0.3, activeCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.5);
+                osc.connect(gain);
+                gain.connect(activeCtx.destination);
+                osc.start();
+                osc.stop(activeCtx.currentTime + 0.5);
+            }
+        });
+    }
 
     function testSound() {
-      if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
-      }
-      playSelectedSound();
+        if (navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]);
+        }
+        playSelectedSound();
     }
- 
+    
     function onGameCountInputChange() {
       saveSettings();
     }
@@ -968,31 +994,31 @@
         try { savedChecked = JSON.parse(savedStr); } catch(e) {}
       }
 
-      for (let i = 1; i <= maxCourts; i++) {
-        const div = document.createElement('div');
-        div.className = 'court-item';
+     for (let i = 1; i <= maxCourts; i++) {
+         const div = document.createElement('div');
+         div.className = 'court-item';
 
-        const cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.id = `court-${i}`;
-        cb.dataset.courtNum = i;
+         const cb = document.createElement('input');
+         cb.type = 'checkbox';
+         cb.id = `court-${i}`; // ID must match labels htmlFor
+         cb.dataset.courtNum = i;
+     
+         if (savedStr !== null && Array.isArray(savedChecked)) {
+             cb.checked = savedChecked.includes(i);
+         } else {
+             cb.checked = (i <= neededCourts);
+         }
 
-        if (savedStr !== null && Array.isArray(savedChecked)) {
-          cb.checked = savedChecked.includes(i);
-        } else {
-          cb.checked = (i <= neededCourts);
-        }
+         cb.addEventListener('change', saveSettings);
 
-        cb.onchange = saveSettings;
+         const label = document.createElement('label');
+         label.htmlFor = `court-${i}`; // Linked to checkbox ID
+         label.innerText = `Court ${i}`;
 
-        const label = document.createElement('label');
-        label.htmlFor = `court-${i}`;
-        label.innerText = `Court ${i}`;
-
-        div.appendChild(cb);
-        div.appendChild(label);
-        container.appendChild(div);
-      }
+         div.appendChild(cb);
+         div.appendChild(label);
+         container.appendChild(div);
+     }
     }
 
     function toggleHelp() {
@@ -1135,37 +1161,32 @@
       renderCurrentAssignment();
     }
 
-    /* --- TIMER & SOUND ALARM CONTROLS --- */
+     /* --- TIMER & SOUND ALARM CONTROLS --- */
     function updateTimerDisplay() {
-      const mins = Math.floor(Math.max(0, remainingSeconds) / 60);
-      const secs = Math.max(0, remainingSeconds) % 60;
-      const displayStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      
-      const timerEl = document.getElementById('timer-display');
-      timerEl.innerText = displayStr;
+      const display = document.getElementById('timerDisplay') || document.getElementById('timer-display');
+      if (!display) return;
 
-      if (remainingSeconds <= 0) {
-         timerEl.classList.add('time-up');
-         playSelectedSound();                                     
-      } else {
-        timerEl.classList.remove('time-up');
-      }
+      const mins = Math.floor(remainingSeconds / 60);
+      const secs = remainingSeconds % 60;
+      display.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
 
     function toggleTimer() {
-      const btn = document.getElementById('start-timer-btn');
+      const btn = document.getElementById('start-timer-btn') || document.getElementById('startTimerBtn');
 
-      // 1. SAFELY WAKE UP AUDIO (Wrapped so audio errors never crash the timer)
+      // 1. Safe Mobile Audio Wakeup (Will not throw errors on iOS/Android)
       try {
-        if (typeof unlockAudioEngine === 'function') {
-          unlockAudioEngine();
-        } else if (typeof getAudioContext === 'function') {
-          getAudioContext();
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-      } catch (e) {
-        console.warn("Audio initialization warning:", e);
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch(e) {
+        console.log("Mobile audio context resume skipped:", e);
       }
 
+      // 2. Timer Toggle Logic
       if (isTimerRunning) {
         clearInterval(timerInterval);
         isTimerRunning = false;
@@ -1174,20 +1195,16 @@
           btn.style.backgroundColor = "#17a2b8";
         }
       } else {
-        // 2. SAFELY GET PLAYTIME (Prevents "Cannot read properties of null" crash)
+        // Determine countdown duration safely
         if (!remainingSeconds || remainingSeconds <= 0) {
-          let mins = 15; // Fallback default
+          let mins = 15;
           const playTimeElem = document.getElementById('playTime');
-
           if (playTimeElem && playTimeElem.value) {
             mins = parseInt(playTimeElem.value, 10) || 15;
           } else {
-            // Fall back to saved localStorage settings if #playTime isn't in DOM right now
             const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
             if (saved) {
-              try { 
-                mins = JSON.parse(saved).playTime || 15; 
-              } catch(e) {}
+              try { mins = JSON.parse(saved).playTime || 15; } catch(e){}
             }
           }
           remainingSeconds = mins * 60;
@@ -1200,15 +1217,15 @@
           btn.style.color = "#333";
         }
 
-        // 3. CLEAR ANY EXISTING INTERVAL BEFORE STARTING
+        // Update screen immediately before interval starts
+        updateTimerDisplay();
+
+        // Clear any active intervals first
         clearInterval(timerInterval);
 
         timerInterval = setInterval(() => {
           remainingSeconds--;
-
-          if (typeof updateTimerDisplay === 'function') {
-            updateTimerDisplay();
-          }
+          updateTimerDisplay();
 
           if (remainingSeconds <= 0) {
             clearInterval(timerInterval);
@@ -1219,15 +1236,11 @@
               btn.style.backgroundColor = "#17a2b8";
             }
 
-            // Trigger selected sound safely
-            try {
-              if (typeof playSound === 'function') {
-                playSound();
-              } else if (typeof playSelectedSound === 'function') {
-                playSelectedSound();
-              }
-            } catch(e) {
-              console.warn("Error playing end sound:", e);
+            // Play end sound
+            if (typeof playSound === 'function') {
+              playSound();
+            } else if (typeof playSelectedSound === 'function') {
+              playSelectedSound();
             }
 
             if (typeof triggerAlarm === 'function') {
@@ -1237,6 +1250,7 @@
         }, 1000);
       }
     }
+    
 
 
     function stopTimer() {
