@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -404,6 +404,16 @@
       flex: 1;
     }
   </style>
+
+  <!-- Mobile Web App & Standalone Mode Settings -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Random Robin">
+  <meta name="theme-color" content="#0f172a">
+  
+  <!-- Self-Contained Web App Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Random%20Robin%22%2C%22short_name%22%3A%22Random%20Robin%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%7D">
 </head>
 <body>
 
@@ -1134,5 +1144,48 @@
       renderCurrentAssignment();
     }
   </script>
+
+  <!-- Inline Service Worker for Offline Capabilities -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'random-robin-cache-v1';
+        
+        self.addEventListener('install', (event) => {
+          event.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => {
+              return cache.addAll([
+                location.pathname,
+                '/'
+              ]);
+            })
+          );
+          self.skipWaiting();
+        });
+
+        self.addEventListener('activate', (event) => {
+          event.waitUntil(self.clients.claim());
+        });
+
+        self.addEventListener('fetch', (event) => {
+          event.respondWith(
+            caches.match(event.request).then((response) => {
+              return response || fetch(event.request);
+            }).catch(() => {
+              return caches.match('/');
+            })
+          );
+        });
+      \`;
+      
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      
+      navigator.serviceWorker.register(swUrl)
+        .then(registration => console.log('Service Worker registered successfully.'))
+        .catch(error => console.error('Service Worker registration failed:', error));
+    }
+  </script>
 </body>
 </html>
+
