@@ -811,7 +811,6 @@
 
 
         /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
-    let globalAudioCtx = null;
 
     function getAudioContext() {
       if (!globalAudioCtx) {
@@ -822,8 +821,6 @@
       }
       return globalAudioCtx;
     }
-
-    let audioCtx = null;
 
     // Unlocks audio for Installed PWAs on the first tap anywhere
     function unlockAudioEngine() {
