@@ -1139,7 +1139,8 @@
           remainingSeconds--;
           updateTimerDisplay();
           if (remainingSeconds <= 0) {
-            clearInterval(timerInterval);
+          clearInterval(timerInterval);
+            playSelectedSound()          
             isTimerRunning = false;
             btn.innerText = "Start Timer";
             btn.style.backgroundColor = "#17a2b8";
@@ -1187,40 +1188,104 @@
       }, 3000);
     }
 
-    /* --- AUDIO & VIBRATION --- */
-    function testSound() {
-      if (navigator.vibrate) {
-        navigator.vibrate([300, 150, 300, 150, 500]);
-      }
+    let audioCtx = null;
 
+    function playSound() {
       try {
+        // 1. Initialize audio context if not created yet
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
+        // Resume audio context if browser suspended it
         if (audioCtx.state === 'suspended') {
           audioCtx.resume();
         }
 
+        // 2. Read selected sound from dropdown OR saved settings
+        let soundType = 'chime';
+        const selectElem = document.getElementById('soundSelect');
+        if (selectElem && selectElem.value) {
+          soundType = selectElem.value;
+        } else {
+          const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+          if (saved) {
+            try { 
+              soundType = JSON.parse(saved).soundChoice || 'chime'; 
+            } catch(e) {}
+          }
+        }
+
         const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
 
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, now); // A5 note
-        osc.frequency.exponentialRampToValueAtTime(440, now + 0.6);
+        // 3. Synthesize chosen sound
+        if (soundType === 'buzzer') {
+          // Low Sawtooth Game Buzzer
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, now);
+          gain.gain.setValueAtTime(0.5, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.8);
 
-        gain.gain.setValueAtTime(0.8, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        } else if (soundType === 'bell') {
+          // Double Bell Chime
+          [523.25, 659.25].forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + (idx * 0.15));
+            gain.gain.setValueAtTime(0.5, now + (idx * 0.15));
+            gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.15) + 0.6);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now + (idx * 0.15));
+            osc.stop(now + (idx * 0.15) + 0.6);
+          });
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        } else if (soundType === 'siren') {
+          // High Siren Sweep
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.5);
 
-        osc.start(now);
-        osc.stop(now + 0.6);
+        } else {
+          // Soft Chime (Default)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.5, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.5);
+        }
       } catch (e) {
         console.log("Audio synthesis error:", e);
       }
     }
+
+    function testSound() {
+      if (navigator.vibrate) {
+        navigator.vibrate([300, 150, 300, 150, 500]);
+      }
+      playSound();
+    }    
+
+
 
     /* --- NEXT GAME / RESHOW GAME --- */
     function nextGame() {
