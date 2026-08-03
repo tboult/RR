@@ -1288,7 +1288,7 @@
         } else {
           clearInterval(alarmInterval);
         }
-      }, 500);
+      }, 1000);
     }
 
 
@@ -1348,9 +1348,9 @@
         const gain = audioCtx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(600, now);
-        osc.frequency.exponentialRampToValueAtTime(1200, now + 1.5);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + .25);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + .25);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start(now);
