@@ -1,18 +1,5 @@
 const CACHE_NAME = 'random-robin-v4';
-// Automatically pull and display the CACHE_NAME from sw.js
-if ('caches' in window) {
-  caches.keys().then((cacheNames) => {
-    // Find the cache matching your prefix (e.g., 'random-robin-v1.0.3')
-    const activeCache = cacheNames.find(name => name.startsWith('random-robin')) || cacheNames[0];
-    
-    if (activeCache) {
-      const versionElem = document.getElementById('app-version');
-      if (versionElem) {
-        versionElem.innerText = activeCache; // Displays 'random-robin-v1.0.3'
-      }
-    }
-  });
-}
+
 const ASSETS = [
   './',
   './index.html',
@@ -22,17 +9,32 @@ const ASSETS = [
   './icon-512.png'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
+// 1. Install Event: Cache static assets & force new worker to activate immediately
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(self.clients.claim());
+// 2. Activate Event: Delete OLD cache versions & take control of open tabs immediately
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key); // Deletes v3, v2, etc. automatically
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+// 3. Fetch Event: Serve from cache first, fall back to network
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((res) => res || fetch(event.request))
   );
 });

@@ -642,6 +642,10 @@
       });
     }
 
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload(); // 👈 Reloads the page automatically with fresh files
+    });
+    
     // Capture Home Screen Install Event
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -1410,6 +1414,30 @@
         .then(() => console.log('Service Worker Registered'))
         .catch((err) => console.error('SW Registration Failed:', err));
     }
+    /
+    // 1. Display active cache version on the page
+    if ('caches' in window) {
+        caches.keys().then((cacheNames) => {
+            const activeCache = cacheNames.find(name => name.startsWith('random-robin')) || cacheNames[0];
+            if (activeCache) {
+                const versionElem = document.getElementById('app-version');
+                if (versionElem) {
+                    versionElem.innerText = activeCache; // Displays 'random-robin-v4'
+                }
+            }
+        });
+    }
+
+    // 2. Automatically reload page when a new sw.js updates and takes control
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch((err) => console.error('SW Registration Failed:', err));
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+        });
+    }    
   </script>
 </body>
 </html>
