@@ -2,106 +2,1139 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Self-Contained Offline App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Random Robin</title>
 
-  <!-- ========================================== -->
-  <!-- 1. APPLE (iOS / iPadOS) CONFIGURATION      -->
-  <!-- ========================================== -->
+  <!-- Mobile Web App & Standalone Mode Settings for iOS & Android -->
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="My Offline App">
-  
-  <!-- Apple Home Screen Icon (Embedded SVG Data URI) -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23007AFF'><rect width='512' height='512' rx='120'/><path d='M256 120 L370 340 L142 340 Z' fill='white'/></svg>">
+  <meta name="apple-mobile-web-app-title" content="Random Robin">
+  <meta name="theme-color" content="#0f172a">
 
-  <!-- ========================================== -->
-  <!-- 2. ANDROID / CHROME CONFIGURATION          -->
-  <!-- ========================================== -->
-  <meta name="theme-color" content="#007AFF">
+  <!-- Self-Contained Web App Manifest for Android PWA -->
+  <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlJhbmRvbSBSb2JpbiIsCiAgInNob3J0X25hbWUiOiAiUmFuZG9tIFJvYmluIiwKICAic3RhcnRfdXJsIjogIi4vIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGYxNzJhIiwKICAidGhlbWVfY29sb3IiOiAiIzBmMTcyYSIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlpXTR4Y214ek1TQWlhSFIwY0RvTEx3ZDNkeTUzTXkwdm1pTXZaMjl1TFpOTmNYSWlJSFpsWlhkQ2IzZzlabTl5TURBZ01DQTBNVFFnT1RFeUlpQjNhV1IwYURBbk1URXlJaUJoWldpZ2RUMHJQU0poY21saGNDSWdMMlpzWW1KcGNIQm5aVzVuZENCcFpEMGlRVEFnTVNBd0pTQWdiMUpmY21sdGNEcEpVM3BCZEdoaWJHOXlkVjl2WkMweUlDSWdNWUlnY0R3diI3YkdaWG14eklHQjVMekFpSUhkcGJIUk9QU0p3WVdKcGNITWlJSEpsYjIxbGMyVmpkRjl2WkNBZ01DQWdTV3dpSUdadmJuUXRZMjlzYjNKZGFXNW5jeTFyWW13aUkySjJaMnhsSUhabGJuUnlZV2RsSUhSMGNITTBpSUcxbGJYQjFaQ0JpWVdOclozSnZkRzl1WkNBOEwzTmxZWFIxYlhOellXd2lJR0p2Ym0waUlHOXpZMmhuYVc1bmVTQThMelU1Y0hWbk4wOUJhMjU1TzBBa0lpQnpkR2x1WjJseVptc3RZWFYwTFc5MllXMTVJRU52WW5KaGNteHZZMjhoSUhGMWRHbHZJSFlpYVhka2FHUXRZMjlzYjNKcGJIUnBjMlowY0NBNU1EQWlJSFpwWlhkQ2IzZzlaaUl3IiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIiwKICAgICAgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIgogICAgfQogIF0KfQ==">
 
-  <!-- Android PWA Manifest (Embedded Data URI JSON) -->
-  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22My%20Offline%20App%22%2C%22short_name%22%3A%22OfflineApp%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23ffffff%22%2C%22theme_color%22%3A%22%23007AFF%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%20fill%3D%27%23007AFF%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20rx%3D%27120%27%2F%3E%3Cpath%20d%3D%27M256%20120%20L370%20340%20L142%20340%20Z%27%20fill%3D%27white%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <!-- New High-Res Vector SVG Icon (Favicon & iOS Apple Touch Icon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IxAwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMTcyYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTI5M2IiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImFjY2VudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4NGNjMTYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNTE2IiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0idXJsKCNiZykiLz4KICA8cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSI0ODgiIGhlaWdodD0iNDg4IiByeD0iMTAzIiBmaWxsPSJub25lIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTgwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjYWNjZW50KSIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWRhc2hhcnJheT0iMjYwIDQwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNIDM5MCAxODAgTCA0MjAgMjIwIEwgMzcwIDIyNSBaIiBmaWxsPSIjODRjYzE2Ii8+CiAgPHBhdGggZD0iTSAxMjIgMzMyIEwgOTIgMjkyIEwgMTQyIDI4NyBaIiBmaWxsPSIjMTBiOTgxIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2Igcj0iMTEwIiBmaWxsPSIjZjk3MzE2Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjIxNiIgY3k9IjIyMCIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIyOTYiIGN5PSIyMjAiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjE2IiBjeT0iMjkyIiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjI5NiIgY3k9IjI5MiIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxODYiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMzI2IiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDx0ZXh0IHg9IjI1NiIgeT0iMjc4IiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI3NiIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9Ii0yIj5SUjwvdGV4dD4KPC9zdmc+">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgIChsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IxAwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMGYxNzJhIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzFlMjkzYiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYWNjZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IxAwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzg0Y2MxNiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxMGI5ODEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTE1IiBmaWxsPSJ1cmwoI2JnKSIvPgogIDxyZWN0IHg9IjEyIiB5PSIxMiIgd2lkdGg9IjQ4OCIgaGVpZ2h0PSI0ODgiIHJ4PSIxMDMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzMzNDE1NSIgc3Ryb2tlLXdpZHRoPSI4Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNhY2NlbnQpIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtZGFzaGFarrayPSIyNjAgNDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0gMzkwIDE4MCBMIDQyMCAyMjAgTCAzNzAgMjI1IFoiIGZpbGw9IiM4NGNjMTYiLz4KICA8cGF0aCBkPSJNIDEyMiAzMzIgTCA5MiAyOTIgTCAxNDIgMjg3IFoiIGZpbGw9IiMxMGI5ODEiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjExMCIgZmlsbD0iI2Y5NzMxNiIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTQiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIyMTYiIGN5PSIyMjAiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjk2IiBjeT0iMjIwIiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjIxNiIgY3k9IjI5MiIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIzOTYiIGN5PSIyOTIiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMTg2IiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjMyNiIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8dGV4dCB4PSIyNTYiIHk9IjI3OCIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iNzYiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSItMiI+UlI8L3RleHQ+Cjwvc3ZnPg==">
 
-  <!-- Standard Browser Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%23007AFF'><rect width='512' height='512' rx='120'/><path d='M256 120 L370 340 L142 340 Z' fill='white'/></svg>">
-
-  <!-- ========================================== -->
-  <!-- 3. EMBEDDED STYLES                        -->
-  <!-- ========================================== -->
   <style>
-    :root {
-      --primary-color: #007AFF;
-      --bg-color: #f4f4f9;
-      --text-color: #333333;
-    }
-
+    /* Base Mobile Styles */
     body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      text-align: center;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    
+    .page {
+      min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
+      box-sizing: border-box;
+      padding: 8px 12px;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Setup Page Styles */
+    #setup-page {
+      justify-content: flex-start;
+      align-items: center;
+    }
+    
+    .setup-container {
+      width: 100%;
+      max-width: 440px;
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-top: 2px;
+      box-sizing: border-box;
+    }
+
+    .header-branding {
+      display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
+      gap: 12px;
+      margin-bottom: 8px;
     }
 
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-      max-width: 320px;
-      width: 90%;
-    }
-
-    .icon-ui {
-      width: 64px;
-      height: 64px;
-      fill: var(--primary-color);
-      margin-bottom: 1rem;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background-color: #34c759;
-      color: white;
-      font-size: 0.85rem;
-      font-weight: bold;
+    .app-logo-img {
+      width: 54px;
+      height: 54px;
       border-radius: 12px;
-      margin-top: 1rem;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    #setup-page h1 {
+      font-size: 1.65rem;
+      margin: 0;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+
+    /* INPUT FIELD LAYOUTS */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    
+    .input-group {
+      text-align: left;
+      margin-bottom: 6px;
+    }
+    
+    .input-group label {
+      display: block;
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .input-group input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
+    
+    /* COURT SELECTION LIST */
+    #setup-page .court-list {
+      text-align: left;
+      margin: 2px 0 4px 0;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 2px solid #eee;
+      padding: 2px 8px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    #setup-page .court-item {
+      padding: 4px 0;
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    #setup-page .court-item input {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+    }
+    
+    .btn {
+      padding: 12px;
+      font-size: 1.3rem;
+      font-weight: 900;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      margin-bottom: 6px;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-row .btn-small {
+      flex: 1;
+    }
+
+    /* Help Section Box */
+    #setup-page .help-box {
+      text-align: left;
+      background: #f8f9fa;
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    #setup-page .help-box h3 {
+      margin-top: 0;
+      margin-bottom: 4px;
+      font-size: 1.1rem;
+      color: #007bff;
+    }
+
+    #setup-page .help-box ul {
+      margin: 4px 0 6px 16px;
+      padding: 0;
+    }
+
+    #setup-page .help-box p {
+      margin: 3px 0;
+    }
+
+    /* Assignment Page Styles */
+    #assignment-page {
+      justify-content: space-between;
+      transition: background-color 0.3s;
+      background-color: white; 
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: pointer;
+    }
+
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 4px;
+    }
+
+    .info-right {
+      text-align: right;
+    }
+
+    #player-counter {
+      font-size: 1.5rem;
+      font-weight: bold;
+      opacity: 0.85;
+      color: #333; 
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    #assignment-game-count {
+      font-size: 1.1rem;
+      font-weight: bold;
+      opacity: 0.75;
+      color: #333;
+      margin-top: 2px;
+    }
+
+    .assignment-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .large-role-text {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin: 0;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .large-court-text {
+      font-size: 13.5rem;
+      font-weight: 900;
+      margin: 18px 0;
+      line-height: 0.85;
+      text-transform: uppercase;
+    }
+    
+    .next-btn-container {
+      width: 100%;
+      padding-bottom: 4px;
+    }
+
+    /* Theme Classes */
+    .theme-silver { color: #5f6368; }
+    .theme-silver .btn { background-color: #5f6368; color: white; }
+    .theme-silver .btn-small { background-color: #f1f3f4; color: #5f6368; }
+
+    .theme-red { color: #d32f2f; }
+    .theme-red .btn { background-color: #d32f2f; color: white; }
+    .theme-red .btn-small { background-color: #ffebee; color: #c62828; }
+
+    .theme-bye { color: #0288d1; }
+    .theme-bye .btn { background-color: #0288d1; color: white; }
+    .theme-bye .btn-small { background-color: #e1f5fe; color: #0288d1; }
+
+    /* End Page Styles */
+    #end-page {
+      background-color: white;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .timer-display {
+      font-size: 6.5rem;
+      font-weight: 900;
+      margin: 0;
+      line-height: 1;
+      color: #333;
+    }
+
+    .timer-display.time-up {
+      color: #d32f2f;
+      animation: pulse 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+
+    .timer-btn-group {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    .timer-btn-group .btn {
+      margin-bottom: 0;
+      flex: 1;
+      padding: 14px 2px;
+      font-size: 1.25rem;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+    }
+
+    /* MODAL OVERLAY STYLES */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+    }
+
+    .modal-box h3 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: #007bff;
+      margin-bottom: 10px;
+    }
+
+    .modal-box p {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: #333;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
+    .modal-box input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .modal-btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-btn-row button {
+      flex: 1;
     }
   </style>
 </head>
 <body>
 
-  <!-- ========================================== -->
-  <!-- 4. EMBEDDED SVG SPRITE (INTERNAL ICONS)     -->
-  <!-- ========================================== -->
-  <svg style="display: none;">
-    <!-- Icon 1: App Logo -->
-    <g id="icon-app-logo">
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </g>
-  </svg>
-
-  <!-- Main App Layout -->
-  <div class="card">
-    <!-- Using the Inline SVG Icon defined above -->
-    <svg class="icon-ui" viewBox="0 0 24 24">
-      <use href="#icon-app-logo"/>
-    </svg>
-
-    <h2>Self-Contained App</h2>
-    <p>This page, its icons, manifest, and metadata are 100% offline-ready for both iOS and Android.</p>
-    
-    <div class="status-badge" id="status">Status: Ready Offline</div>
+  <!-- MODAL DIALOG -->
+  <div id="custom-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h3 id="modal-title">Notice</h3>
+      <p id="modal-message"></p>
+      <input type="number" id="modal-input" class="hidden" min="1" placeholder="Enter minutes">
+      <div class="modal-btn-row">
+        <button class="btn-small btn-secondary hidden" id="modal-cancel-btn">Cancel</button>
+        <button class="btn-small" id="modal-ok-btn" style="background-color: #007bff; color: white;">OK</button>
+      </div>
+    </div>
   </div>
 
+  <!-- SETUP PAGE -->
+  <div id="setup-page" class="page">
+    <div class="setup-container">
+      
+      <div class="header-branding">
+        <img id="app-logo-img" alt="Random Robin Logo" class="app-logo-img" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IxAwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBmMTcyYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxZTI5M2IiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImFjY2VudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4NGNjMTYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTBiOTgxIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iNTE2IiBoZWlnaHQ9IjUxMiIgcng9IjExNSIgZmlsbD0idXJsKCNiZykiLz4KICA8cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSI0ODgiIGhlaWdodD0iNDg4IiByeD0iMTA3IiBmaWxsPSJub25lIiBzdHJva2U9IiMzMzQxNTUiIHN0cm9rZS13aWR0aD0iOCIvPgogIDxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTgwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjYWNjZW50KSIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWRhc2hhcnJheT0iMjYwIDQwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNIDM5MCAxODAgTCA0MjAgMjIwIEwgMzcwIDIyNSBaIiBmaWxsPSIjODRjYzE2Ii8+CiAgPHBhdGggZD0iTSAxMjIgMzMyIEwgOTIgMjkyIEwgMTQyIDI4NyBaIiBmaWxsPSIjMTBiOTgxIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2Igcj0iMTEwIiBmaWxsPSIjZjk3MzE2Ii8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNCIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjIxNiIgY3k9IjIyMCIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIyOTYiIGN5PSIyMjAiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjE2IiBjeT0iMjkyIiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDxjaXJjbGUgY3g9IjI5YiIgY3k9IjI5MiIgcj0iMTIiIGZpbGw9IiMwZjE3MmEiLz4KICA8Y2lyY2xlIGN4PSIyNTYiIGN5PSIxODYiIHI9IjEyIiBmaWxsPSIjMGYxNzJhIi8+CiAgPGNpcmNsZSBjeD0iMjU2IiBjeT0iMzI2IiByPSIxMiIgZmlsbD0iIzBmMTcyYSIvPgogIDx0ZXh0IHg9IjI1NiIgeT0iMjc4IiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI3YiIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9Ii0yIj5SUjwvdGV4dD4KPC9zdmc+">
+        <h1 id="app-heading">Random Robin</h1>
+      </div>
+      
+      <!-- LINE 1: #PLAYERS -->
+      <div class="input-group">
+        <label for="numPlayers">#Players</label>
+        <input type="number" id="numPlayers" value="8" min="1" onchange="saveSettings()" oninput="saveSettings()">
+      </div>
+
+      <!-- LINE 2: GAME # AND RESET BUTTON -->
+      <div class="input-group">
+        <label for="gameCount">Game #</label>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="number" id="gameCount" value="1" min="1" onchange="onGameCountInputChange()" oninput="onGameCountInputChange()" style="flex: 1;">
+          <button type="button" class="btn-small btn-secondary" onclick="resetGameCount()" style="white-space: nowrap; height: 100%; padding: 8px 16px;">Reset Game #</button>
+        </div>
+      </div>
+
+      <!-- LINE 3: TIMER AND MAX COURTS -->
+      <div class="input-grid">
+        <div class="input-group">
+          <label for="playTime">Timer (Minutes)</label>
+          <input type="number" id="playTime" min="1" onchange="onPlayTimeInputChange()" oninput="onPlayTimeInputChange()">
+        </div>
+
+        <div class="input-group">
+          <label for="maxCourts">Max Courts</label>
+          <input type="number" id="maxCourts" min="1" onchange="generateCheckboxes(); saveSettings();" oninput="saveSettings()">
+        </div>
+      </div>
+
+      <!-- COURT SELECTION -->
+      <div class="input-group">
+        <label>Select Courts to Use</label>
+        <div id="court-list" class="court-list">
+          <!-- Checkboxes generated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- START ASSIGNMENTS BUTTON -->
+      <button class="btn" style="margin-top: 4px; margin-bottom: 8px;" onclick="startAssignments()">Start Assignments</button>
+
+      <!-- Small Control Buttons Row -->
+      <div class="btn-row">
+        <button class="btn-small btn-secondary" onclick="testSound()">🔊 Sound</button>
+        <button class="btn-small btn-secondary" style="background-color: #28a745;" onclick="triggerInstallPrompt()">📱 Install App</button>
+        <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="toggleHelp()">❓ Help</button>
+      </div>
+
+      <!-- Expandable Help Box -->
+      <div id="help-box" class="help-box hidden">
+        <h3>📖 App Instructions & Help</h3>
+        <p><strong>App Purpose:</strong> Generates randomized player court assignments (Servers, Receivers, or Bye) for group pickleball round-robin sessions.</p>
+        <p><strong>How to Use:</strong></p>
+        <ul>
+          <li><strong>#Players:</strong> Enter total players present. Calculates needed courts and Bye breaks automatically.</li>
+          <li><strong>Game #:</strong> Increments after each round. Tap <em>Reset Game #</em> to set back to 1.</li>
+          <li><strong>Timer (Minutes):</strong> Built-in match countdown clock with audio and vibration alerts.</li>
+          <li><strong>Max Courts:</strong> Set total courts available at your facility.</li>
+          <li><strong>Select Courts:</strong> Check off courts open for play.</li>
+          <li>Select <strong>Start Assignments</strong> to begin.</li>
+          <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
+          <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random Robin directly to your phone for quick offline access!</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ASSIGNMENT PAGE -->
+  <div id="assignment-page" class="page hidden" onclick="handleAssignmentPageClick(event)">
+    <div class="top-bar">
+      <button class="btn-small" id="prev-btn" onclick="event.stopPropagation(); showPreviousAssignment();">⬅ Setup</button>
+      <div class="info-right">
+        <div id="player-counter">Player 1 of 8</div>
+        <div id="assignment-game-count">Game 1</div>
+      </div>
+    </div>
+
+    <div class="assignment-content">
+      <div id="top-role-text" class="large-role-text">SERVER</div>
+      <div id="court-text" class="large-court-text">1</div>
+      <div id="bottom-role-text" class="large-role-text">SERVER</div>
+    </div>
+    
+    <div class="next-btn-container">
+      <button class="btn" id="next-btn">Next Player</button>
+    </div>
+  </div>
+
+  <!-- END OF GAME PAGE -->
+  <div id="end-page" class="page hidden">
+    <div class="top-bar">
+      <button class="btn-small btn-secondary" onclick="goToLastPlayer()">⬅ Previous</button>
+    </div>
+
+    <div class="assignment-content">
+      <div class="large-court-text" style="color: #333; font-size: 3.5rem; margin-bottom: 0;">All Assigned!</div>
+      
+      <!-- Countdown Timer Display -->
+      <div id="timer-display" class="timer-display">13:00</div>
+      
+      <!-- Timer Controls -->
+      <div class="timer-btn-group">
+        <button class="btn" id="start-timer-btn" style="background-color: #17a2b8;" onclick="toggleTimer()">Start Timer</button>
+        <button class="btn" id="edit-timer-btn" style="background-color: #ffc107; color: #333;" onclick="editTimer()">Edit Timer</button>
+        <button class="btn" id="stop-timer-btn" style="background-color: #dc3545;" onclick="stopTimer()">Stop / Reset</button>
+      </div>
+
+      <button class="btn btn-secondary" style="max-width: 420px; padding: 12px; font-size: 1.15rem; margin-bottom: 8px;" onclick="testSound()">🔊 Test Sound & Vibration</button>
+    </div>
+    
+    <div class="next-btn-container" style="max-width: 440px; margin: 0 auto;">
+      <button class="btn btn-success" onclick="nextGame()">Next Game</button>
+      <div class="btn-row" style="margin-bottom: 4px;">
+        <button class="btn-small btn-secondary" style="padding: 12px; font-size: 1.15rem;" onclick="reshowGame()">Reshow Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // APP CONSTANTS & STORAGE KEYS
+    const APP_NAME = "Random Robin";
+    const DEFAULT_MAX_COURTS = 20;
+    const DEFAULT_PLAY_TIME = 13;
+
+    const STORAGE_KEY_SETTINGS = 'random_robin_app_settings';
+    const STORAGE_KEY_COURTS = 'random_robin_checked_courts';
+
+    // App State Variables
+    let assignments = [];
+    let currentIndex = 0;
+    let totalPlayers = 8;
+    let gameCount = 1;
+
+    // Timer & Alarm Variables
+    let playTimeSeconds = DEFAULT_PLAY_TIME * 60;
+    let remainingSeconds = playTimeSeconds;
+    let timerInterval = null;
+    let isTimerRunning = false;
+    let audioCtx = null;
+    let alarmInterval = null;
+
+    // Deferred install prompt for PWA
+    let deferredPrompt = null;
+
+    // Register Service Worker for Offline Cache
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swScript = `
+          const CACHE_NAME = 'random-robin-v5';
+          
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          
+          self.addEventListener('activate', (e) => {
+            self.clients.claim();
+          });
+          
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request)
+                .then((response) => {
+                  const clone = response.clone();
+                  caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+                  return response;
+                })
+                .catch(() => {
+                  return caches.match(e.request) || caches.match('.');
+                })
+            );
+          });
+        `;
+        const blob = new Blob([swScript], { type: 'text/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob))
+          .then(() => console.log('Offline service worker registered'))
+          .catch(err => console.log('Service worker issue:', err));
+      });
+    }
+
+    // Capture Home Screen Install Event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    // Keypress navigation
+    window.addEventListener('keydown', function(event) {
+      const assignmentPage = document.getElementById('assignment-page');
+      if (!assignmentPage.classList.contains('hidden')) {
+        showNextAssignment();
+      }
+    });
+
+    function handleAssignmentPageClick(event) {
+      if (event.target.closest('#prev-btn')) return;
+      showNextAssignment();
+    }
+
+    window.onload = function() {
+      document.title = APP_NAME;
+      document.getElementById('app-heading').innerText = APP_NAME;
+
+      document.getElementById('maxCourts').value = DEFAULT_MAX_COURTS;
+      document.getElementById('numPlayers').value = totalPlayers;
+      document.getElementById('playTime').value = DEFAULT_PLAY_TIME;
+
+      gameCount = 1;
+      document.getElementById('gameCount').value = gameCount;
+
+      loadSettings();
+
+      const savedMinutes = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+      playTimeSeconds = savedMinutes * 60;
+      remainingSeconds = playTimeSeconds;
+      updateTimerDisplay();
+
+      generateCheckboxes();
+    };
+
+    /* --- HOME SCREEN INSTALL PROMPT LOGIC --- */
+    function isRunningStandalone() {
+      return (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone === true);
+    }
+
+    function triggerInstallPrompt() {
+      if (isRunningStandalone()) {
+        showAlert("Random Robin is already installed and running from your Home Screen!", "📱 Already Installed");
+        return;
+      }
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showAlert("Random Robin has been added to your Home Screen!", "📱 Success");
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          showAlert(
+            "To save Random Robin to your iPhone/iPad Home Screen:\n\n1. Tap the Share button ⎋ at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen ➕'",
+            "📱 Save to Home Screen (iOS)"
+          );
+        } else {
+          showAlert(
+            "To save Random Robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'",
+            "📱 Save to Home Screen (Android)"
+          );
+        }
+      }
+    }
+
+    /* --- MODAL DIALOGS --- */
+    function showAlert(msg, title = "Notice") {
+      const modal = document.getElementById('custom-modal');
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = msg;
+      document.getElementById('modal-input').classList.add('hidden');
+      document.getElementById('modal-cancel-btn').classList.add('hidden');
+      
+      const okBtn = document.getElementById('modal-ok-btn');
+      okBtn.innerText = "OK";
+      okBtn.onclick = function() {
+        modal.classList.add('hidden');
+      };
+      
+      modal.classList.remove('hidden');
+    }
+
+    function showConfirm(msg, title = "Warning", okText = "Proceed", cancelText = "Edit Courts", onConfirm = null) {
+      const modal = document.getElementById('custom-modal');
+      const input = document.getElementById('modal-input');
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      const okBtn = document.getElementById('modal-ok-btn');
+
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = msg;
+      input.classList.add('hidden');
+
+      cancelBtn.innerText = cancelText;
+      cancelBtn.classList.remove('hidden');
+
+      okBtn.innerText = okText;
+
+      cancelBtn.onclick = function() {
+        modal.classList.add('hidden');
+      };
+
+      okBtn.onclick = function() {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    function showPrompt(msg, defaultValue, onConfirm) {
+      const modal = document.getElementById('custom-modal');
+      const input = document.getElementById('modal-input');
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      const okBtn = document.getElementById('modal-ok-btn');
+
+      document.getElementById('modal-title').innerText = "Edit Timer";
+      document.getElementById('modal-message').innerText = msg;
+      input.value = defaultValue;
+      
+      input.classList.remove('hidden');
+      cancelBtn.innerText = "Cancel";
+      cancelBtn.classList.remove('hidden');
+      okBtn.innerText = "OK";
+
+      cancelBtn.onclick = function() {
+        modal.classList.add('hidden');
+      };
+
+      okBtn.onclick = function() {
+        const val = parseInt(input.value, 10);
+        modal.classList.add('hidden');
+        if (!isNaN(val) && val > 0 && onConfirm) {
+          onConfirm(val);
+        }
+      };
+
+      modal.classList.remove('hidden');
+    }
+
+    /* --- PERSISTENT STORAGE --- */
+    function saveSettings() {
+      const numPlayers = parseInt(document.getElementById('numPlayers').value, 10) || 8;
+      const maxCourts = parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS;
+      const playTime = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+      const gCount = parseInt(document.getElementById('gameCount').value, 10) || 1;
+
+      totalPlayers = numPlayers;
+      gameCount = gCount;
+
+      const settings = {
+        numPlayers,
+        maxCourts,
+        playTime,
+        gameCount
+      };
+
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+
+      const checkedCourts = [];
+      const checkboxes = document.querySelectorAll('#court-list input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          checkedCourts.push(parseInt(cb.dataset.courtNum, 10));
+        }
+      });
+
+      localStorage.setItem(STORAGE_KEY_COURTS, JSON.stringify(checkedCourts));
+    }
+
+    function loadSettings() {
+      const savedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+      if (savedSettings) {
+        try {
+          const s = JSON.parse(savedSettings);
+          if (s.numPlayers) document.getElementById('numPlayers').value = s.numPlayers;
+          if (s.maxCourts) document.getElementById('maxCourts').value = s.maxCourts;
+          if (s.playTime) document.getElementById('playTime').value = s.playTime;
+          if (s.gameCount) document.getElementById('gameCount').value = s.gameCount;
+
+          totalPlayers = parseInt(document.getElementById('numPlayers').value, 10);
+          gameCount = parseInt(document.getElementById('gameCount').value, 10);
+        } catch(e) {}
+      }
+    }
+
+    function onGameCountInputChange() {
+      saveSettings();
+    }
+
+    function resetGameCount() {
+      document.getElementById('gameCount').value = 1;
+      saveSettings();
+    }
+
+    function onPlayTimeInputChange() {
+      saveSettings();
+      const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+      playTimeSeconds = mins * 60;
+      if (!isTimerRunning) {
+        remainingSeconds = playTimeSeconds;
+        updateTimerDisplay();
+      }
+    }
+
+    /* --- COURT CHECKBOX GENERATION --- */
+    function generateCheckboxes() {
+      const container = document.getElementById('court-list');
+      container.innerHTML = '';
+
+      const maxCourts = parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS;
+      const numPlayers = parseInt(document.getElementById('numPlayers').value, 10) || 8;
+      const neededCourts = Math.floor(numPlayers / 4);
+
+      let savedChecked = [];
+      const savedStr = localStorage.getItem(STORAGE_KEY_COURTS);
+      if (savedStr) {
+        try { savedChecked = JSON.parse(savedStr); } catch(e) {}
+      }
+
+      for (let i = 1; i <= maxCourts; i++) {
+        const div = document.createElement('div');
+        div.className = 'court-item';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = `court-${i}`;
+        cb.dataset.courtNum = i;
+
+        if (savedStr !== null && Array.isArray(savedChecked)) {
+          cb.checked = savedChecked.includes(i);
+        } else {
+          cb.checked = (i <= neededCourts);
+        }
+
+        cb.onchange = saveSettings;
+
+        const label = document.createElement('label');
+        label.htmlFor = `court-${i}`;
+        label.innerText = `Court ${i}`;
+
+        div.appendChild(cb);
+        div.appendChild(label);
+        container.appendChild(div);
+      }
+    }
+
+    function toggleHelp() {
+      const help = document.getElementById('help-box');
+      help.classList.toggle('hidden');
+    }
+
+    /* --- RANDOM ASSIGNMENT LOGIC --- */
+    function startAssignments() {
+      const numPlayers = parseInt(document.getElementById('numPlayers').value, 10) || 0;
+      if (numPlayers < 1) {
+        showAlert("Please enter at least 1 player.", "Error");
+        return;
+      }
+
+      const selectedCourts = [];
+      document.querySelectorAll('#court-list input[type="checkbox"]').forEach(cb => {
+        if (cb.checked) selectedCourts.push(parseInt(cb.dataset.courtNum, 10));
+      });
+
+      const courtsNeeded = Math.floor(numPlayers / 4);
+
+      if (selectedCourts.length < courtsNeeded) {
+        showConfirm(
+          `You have ${numPlayers} players (requires ${courtsNeeded} court(s)), but only ${selectedCourts.length} court(s) are selected.\n\nProceed anyway with selected courts?`,
+          "Not Enough Courts Selected",
+          "Proceed Anyway",
+          "Edit Courts",
+          () => createAssignmentsAndShow(numPlayers, selectedCourts)
+        );
+      } else {
+        createAssignmentsAndShow(numPlayers, selectedCourts);
+      }
+    }
+
+    function createAssignmentsAndShow(numPlayers, selectedCourts) {
+      totalPlayers = numPlayers;
+      assignments = [];
+
+      const activeCourtsToUse = selectedCourts.slice(0, Math.floor(numPlayers / 4));
+
+      activeCourtsToUse.forEach(cNum => {
+        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-red' });
+        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-red' });
+        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-silver' });
+        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-silver' });
+      });
+
+      const assignedCount = assignments.length;
+      const byeCount = numPlayers - assignedCount;
+
+      for (let i = 0; i < byeCount; i++) {
+        assignments.push({ role: 'BYE', court: 'SIT OUT', theme: 'theme-bye' });
+      }
+
+      // Fisher-Yates shuffle
+      for (let i = assignments.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+      }
+
+      currentIndex = 0;
+      document.getElementById('setup-page').classList.add('hidden');
+      document.getElementById('end-page').classList.add('hidden');
+      document.getElementById('assignment-page').classList.remove('hidden');
+
+      renderCurrentAssignment();
+    }
+
+    function renderCurrentAssignment() {
+      if (currentIndex < 0 || currentIndex >= assignments.length) return;
+
+      const curr = assignments[currentIndex];
+      const page = document.getElementById('assignment-page');
+
+      page.className = 'page ' + curr.theme;
+
+      document.getElementById('player-counter').innerText = `Player ${currentIndex + 1} of ${assignments.length}`;
+      document.getElementById('assignment-game-count').innerText = `Game ${gameCount}`;
+
+      if (curr.role === 'BYE') {
+        document.getElementById('top-role-text').innerText = 'BYE';
+        document.getElementById('court-text').innerText = 'BREAK';
+        document.getElementById('bottom-role-text').innerText = 'SIT OUT';
+      } else {
+        document.getElementById('top-role-text').innerText = curr.role;
+        document.getElementById('court-text').innerText = curr.court;
+        document.getElementById('bottom-role-text').innerText = curr.role;
+      }
+
+      const nextBtn = document.getElementById('next-btn');
+      if (currentIndex === assignments.length - 1) {
+        nextBtn.innerText = "Finish Assignments";
+      } else {
+        nextBtn.innerText = "Next Player";
+      }
+    }
+
+    function showNextAssignment() {
+      if (currentIndex < assignments.length - 1) {
+        currentIndex++;
+        renderCurrentAssignment();
+      } else {
+        // Finished all assignments -> Go to end page
+        document.getElementById('assignment-page').classList.add('hidden');
+        document.getElementById('end-page').classList.remove('hidden');
+
+        // Reset & start timer if user hasn't started it
+        const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+        if (!isTimerRunning) {
+          playTimeSeconds = mins * 60;
+          remainingSeconds = playTimeSeconds;
+          updateTimerDisplay();
+        }
+      }
+    }
+
+    function showPreviousAssignment() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderCurrentAssignment();
+      } else {
+        // Go back to setup page
+        document.getElementById('assignment-page').classList.add('hidden');
+        document.getElementById('setup-page').classList.remove('hidden');
+      }
+    }
+
+    function goToLastPlayer() {
+      document.getElementById('end-page').classList.add('hidden');
+      document.getElementById('assignment-page').classList.remove('hidden');
+      currentIndex = assignments.length - 1;
+      renderCurrentAssignment();
+    }
+
+    /* --- TIMER & SOUND ALARM CONTROLS --- */
+    function updateTimerDisplay() {
+      const mins = Math.floor(Math.max(0, remainingSeconds) / 60);
+      const secs = Math.max(0, remainingSeconds) % 60;
+      const displayStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      
+      const timerEl = document.getElementById('timer-display');
+      timerEl.innerText = displayStr;
+
+      if (remainingSeconds <= 0) {
+        timerEl.classList.add('time-up');
+      } else {
+        timerEl.classList.remove('time-up');
+      }
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('start-timer-btn');
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        btn.innerText = "Resume Timer";
+        btn.style.backgroundColor = "#17a2b8";
+      } else {
+        if (remainingSeconds <= 0) {
+          const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+          remainingSeconds = mins * 60;
+        }
+        isTimerRunning = true;
+        btn.innerText = "Pause Timer";
+        btn.style.backgroundColor = "#ffc107";
+        btn.style.color = "#333";
+
+        timerInterval = setInterval(() => {
+          remainingSeconds--;
+          updateTimerDisplay();
+          if (remainingSeconds <= 0) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.innerText = "Start Timer";
+            btn.style.backgroundColor = "#17a2b8";
+            triggerAlarm();
+          }
+        }, 1000);
+      }
+    }
+
+    function stopTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      if (alarmInterval) clearInterval(alarmInterval);
+      isTimerRunning = false;
+      
+      const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+      playTimeSeconds = mins * 60;
+      remainingSeconds = playTimeSeconds;
+
+      const btn = document.getElementById('start-timer-btn');
+      btn.innerText = "Start Timer";
+      btn.style.backgroundColor = "#17a2b8";
+
+      updateTimerDisplay();
+    }
+
+    function editTimer() {
+      const currentMins = Math.ceil(remainingSeconds / 60) || DEFAULT_PLAY_TIME;
+      showPrompt("Enter new countdown timer duration in minutes:", currentMins, (newMins) => {
+        document.getElementById('playTime').value = newMins;
+        saveSettings();
+        playTimeSeconds = newMins * 60;
+        remainingSeconds = playTimeSeconds;
+        updateTimerDisplay();
+      });
+    }
+
+    function triggerAlarm() {
+      testSound();
+      alarmInterval = setInterval(() => {
+        if (remainingSeconds <= 0) {
+          testSound();
+        } else {
+          clearInterval(alarmInterval);
+        }
+      }, 3000);
+    }
+
+    /* --- AUDIO & VIBRATION --- */
+    function testSound() {
+      if (navigator.vibrate) {
+        navigator.vibrate([300, 150, 300, 150, 500]);
+      }
+
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now); // A5 note
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.6);
+
+        gain.gain.setValueAtTime(0.8, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.6);
+      } catch (e) {
+        console.log("Audio synthesis error:", e);
+      }
+    }
+
+    /* --- NEXT GAME / RESHOW GAME --- */
+    function nextGame() {
+      if (alarmInterval) clearInterval(alarmInterval);
+      stopTimer();
+
+      gameCount++;
+      document.getElementById('gameCount').value = gameCount;
+      saveSettings();
+
+      startAssignments();
+    }
+
+    function reshowGame() {
+      if (alarmInterval) clearInterval(alarmInterval);
+      currentIndex = 0;
+      document.getElementById('end-page').classList.add('hidden');
+      document.getElementById('assignment-page').classList.remove('hidden');
+      renderCurrentAssignment();
+    }
+  </script>
 </body>
 </html>
