@@ -405,19 +405,12 @@
     }
   </style>
 
-  <!-- Mobile Web App & Standalone Mode Settings -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Random Robin">
+  <title>Random Robin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f172a">
-  
-  <!-- Favicon & Apple Touch Icon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230f172a'/%3E%3Ctext x='50' y='65' font-family='sans-serif' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3ERR%3C/text%3E%3C/svg%3E">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230f172a'/%3E%3Ctext x='50' y='65' font-family='sans-serif' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3ERR%3C/text%3E%3C/svg%3E">
-  
-  <!-- Self-Contained Web App Manifest with Icon -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Random%20Robin%22%2C%22short_name%22%3A%22Random%20Robin%22%2C%22start_url%22%3A%22.%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230f172a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520viewBox%253D%25270%25200%2520100%2520100%2527%253E%253Ccircle%2520cx%253D%252750%2527%2520cy%253D%252750%2527%2520r%253D%252750%2527%2520fill%253D%2527%25230f172a%2527%252F%253E%253Ctext%2520x%253D%252750%2527%2520y%253D%252765%2527%2520font-family%253D%2527sans-serif%2527%2520font-size%253D%252740%2527%2520font-weight%253D%2527bold%2527%2520fill%253D%2527white%2527%2520text-anchor%253D%2527middle%2527%253ERR%253C%252Ftext%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
 </head>
 <body>
 
@@ -1149,48 +1142,12 @@
     }
   </script>
 
-  <!-- Inline Service Worker for Offline Capabilities -->
   <script>
     if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'random-robin-cache-v1';
-        
-        self.addEventListener('install', (event) => {
-          event.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => {
-              return cache.addAll([
-                location.pathname,
-                '/'
-              ]);
-            })
-          );
-          self.skipWaiting();
-        });
-
-        self.addEventListener('activate', (event) => {
-          event.waitUntil(self.clients.claim());
-        });
-
-        self.addEventListener('fetch', (event) => {
-          event.respondWith(
-            caches.match(event.request).then((response) => {
-              return response || fetch(event.request);
-            }).catch(() => {
-              return caches.match('/');
-            })
-          );
-        });
-      \`;
-      
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      
-      navigator.serviceWorker.register(swUrl)
-        .then(registration => console.log('Service Worker registered successfully.'))
-        .catch(error => console.error('Service Worker registration failed:', error));
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch((err) => console.error('SW Registration Failed:', err));
     }
   </script>
 </body>
 </html>
-
-
