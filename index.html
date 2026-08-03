@@ -104,7 +104,7 @@
       text-overflow: ellipsis;
     }
     
-    .input-group input[type="number"] {
+    .input-group input[type="number"], .input-group select {
       width: 100%;
       padding: 6px 8px;
       font-size: 1.1rem;
@@ -112,6 +112,7 @@
       border: 2px solid #ccc;
       border-radius: 8px;
       box-sizing: border-box;
+      background-color: white;
     }
     
     /* COURT SELECTION LIST */
@@ -455,6 +456,16 @@
         </div>
       </div>
 
+      <div class="input-group">
+        <label for="soundSelect">End Sound</label>
+        <select id="soundSelect" onchange="saveSettings()">
+          <option value="chime">Soft Chime (Default)</option>
+          <option value="buzzer">Game Buzzer</option>
+          <option value="bell">Double Bell</option>
+          <option value="siren">High Siren</option>
+        </select>
+      </div>      
+
       <!-- COURT SELECTION -->
       <div class="input-group">
         <label>Select Courts to Use</label>
@@ -672,9 +683,7 @@
             "📱 Save to Home Screen (iOS)"
           );
         } else {
-          showAlert(
-            "To save Random Robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'  \n\n To install on iPhone: Tap Share ... and select Add to Home Screen."",
-            "📱 Save to Home Screen"
+          showAlert("To save Random Robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'  \n\n To install on iPhone: Tap Share ... and select Add to Home Screen."
           );
         }
       }
@@ -756,10 +765,11 @@
 
     /* --- PERSISTENT STORAGE --- */
     function saveSettings() {
-      const numPlayers = parseInt(document.getElementById('numPlayers').value, 10) || 8;
-      const maxCourts = parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS;
-      const playTime = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
-      const gCount = parseInt(document.getElementById('gameCount').value, 10) || 1;
+      const numPlayers = parseInt(document.getElementById('numPlayers')?.value, 10) || 8;
+      const maxCourts = parseInt(document.getElementById('maxCourts')?.value, 10) || DEFAULT_MAX_COURTS;
+      const playTime = parseInt(document.getElementById('playTime')?.value, 10) || DEFAULT_PLAY_TIME;
+      const gCount = parseInt(document.getElementById('gameCount')?.value, 10) || 1;
+      const soundChoice = document.getElementById('soundSelect')?.value || 'chime';
 
       totalPlayers = numPlayers;
       gameCount = gCount;
@@ -768,20 +778,16 @@
         numPlayers,
         maxCourts,
         playTime,
-        gameCount
+        gameCount,
+        soundChoice
       };
 
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
 
-      const checkedCourts = [];
-      const checkboxes = document.querySelectorAll('#court-list input[type="checkbox"]');
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          checkedCourts.push(parseInt(cb.dataset.courtNum, 10));
-        }
-      });
-
-      localStorage.setItem(STORAGE_KEY_COURTS, JSON.stringify(checkedCourts));
+      // MAKE SURE YOUR COURT CHECKBOX GENERATOR IS STILL CALLED HERE IF NEEDED:
+      if (typeof generateCheckboxes === 'function') {
+        generateCheckboxes();
+      }
     }
 
     function loadSettings() {
@@ -789,17 +795,105 @@
       if (savedSettings) {
         try {
           const s = JSON.parse(savedSettings);
-          if (s.numPlayers) document.getElementById('numPlayers').value = s.numPlayers;
-          if (s.maxCourts) document.getElementById('maxCourts').value = s.maxCourts;
-          if (s.playTime) document.getElementById('playTime').value = s.playTime;
-          if (s.gameCount) document.getElementById('gameCount').value = s.gameCount;
+          if (s.numPlayers && document.getElementById('numPlayers')) document.getElementById('numPlayers').value = s.numPlayers;
+          if (s.maxCourts && document.getElementById('maxCourts')) document.getElementById('maxCourts').value = s.maxCourts;
+          if (s.playTime && document.getElementById('playTime')) document.getElementById('playTime').value = s.playTime;
+          if (s.gameCount && document.getElementById('gameCount')) document.getElementById('gameCount').value = s.gameCount;
+          if (s.soundChoice && document.getElementById('soundSelect')) document.getElementById('soundSelect').value = s.soundChoice;
 
-          totalPlayers = parseInt(document.getElementById('numPlayers').value, 10);
-          gameCount = parseInt(document.getElementById('gameCount').value, 10);
-        } catch(e) {}
+          totalPlayers = parseInt(document.getElementById('numPlayers')?.value, 10) || 8;
+          gameCount = parseInt(document.getElementById('gameCount')?.value, 10) || 1;
+        } catch(e) {
+          console.error("Error loading settings:", e);
+        }
       }
     }
 
+
+        /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
+    let globalAudioCtx = null;
+
+    function getAudioContext() {
+      if (!globalAudioCtx) {
+        globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (globalAudioCtx.state === 'suspended') {
+        globalAudioCtx.resume();
+      }
+      return globalAudioCtx;
+    }
+
+    function playSelectedSound() {
+      const audioCtx = getAudioContext();
+
+      audioCtx.resume().then(() => {
+        const soundType = document.getElementById('soundSelect') ? document.getElementById('soundSelect').value : 'chime';
+
+        if (soundType === 'buzzer') {
+          // Game Buzzer (Sawtooth Low Tone)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.8);
+
+        } else if (soundType === 'bell') {
+          // Double Bell Chime
+          [523.25, 659.25].forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.15));
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime + (idx * 0.15));
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (idx * 0.15) + 0.6);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + (idx * 0.15));
+            osc.stop(audioCtx.currentTime + (idx * 0.15) + 0.6);
+          });
+
+        } else if (soundType === 'siren') {
+          // High Siren Sweep
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.4);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+
+        } else {
+          // Default Soft Chime
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.5);
+        }
+      });
+    }
+
+    function testSound() {
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+      playSelectedSound();
+    }
+ 
     function onGameCountInputChange() {
       saveSettings();
     }
@@ -1004,7 +1098,8 @@
       timerEl.innerText = displayStr;
 
       if (remainingSeconds <= 0) {
-        timerEl.classList.add('time-up');
+         timerEl.classList.add('time-up');
+         playSelectedSound();                                     
       } else {
         timerEl.classList.remove('time-up');
       }
@@ -1026,7 +1121,8 @@
         btn.innerText = "Pause Timer";
         btn.style.backgroundColor = "#ffc107";
         btn.style.color = "#333";
-
+        // UNLOCK AUDIO: Wake up the AudioContext on user click so end-of-timer sound can play
+        getAudioContext();
         timerInterval = setInterval(() => {
           remainingSeconds--;
           updateTimerDisplay();
