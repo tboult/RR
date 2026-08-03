@@ -1,4 +1,4 @@
-const CACHE_NAME = 'random-robin-v4';
+const CACHE_NAME = 'RR-v5';
 
 const ASSETS = [
   './',
