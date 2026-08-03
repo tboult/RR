@@ -1154,36 +1154,90 @@
 
     function toggleTimer() {
       const btn = document.getElementById('start-timer-btn');
-      getAudioContext();
+
+      // 1. SAFELY WAKE UP AUDIO (Wrapped so audio errors never crash the timer)
+      try {
+        if (typeof unlockAudioEngine === 'function') {
+          unlockAudioEngine();
+        } else if (typeof getAudioContext === 'function') {
+          getAudioContext();
+        }
+      } catch (e) {
+        console.warn("Audio initialization warning:", e);
+      }
+
       if (isTimerRunning) {
         clearInterval(timerInterval);
         isTimerRunning = false;
-        btn.innerText = "Resume Timer";
-        btn.style.backgroundColor = "#17a2b8";
+        if (btn) {
+          btn.innerText = "Resume Timer";
+          btn.style.backgroundColor = "#17a2b8";
+        }
       } else {
-        if (remainingSeconds <= 0) {
-          const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+        // 2. SAFELY GET PLAYTIME (Prevents "Cannot read properties of null" crash)
+        if (!remainingSeconds || remainingSeconds <= 0) {
+          let mins = 15; // Fallback default
+          const playTimeElem = document.getElementById('playTime');
+
+          if (playTimeElem && playTimeElem.value) {
+            mins = parseInt(playTimeElem.value, 10) || 15;
+          } else {
+            // Fall back to saved localStorage settings if #playTime isn't in DOM right now
+            const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+            if (saved) {
+              try { 
+                mins = JSON.parse(saved).playTime || 15; 
+              } catch(e) {}
+            }
+          }
           remainingSeconds = mins * 60;
         }
+
         isTimerRunning = true;
-        btn.innerText = "Pause Timer";
-        btn.style.backgroundColor = "#ffc107";
-        btn.style.color = "#333";
-        // UNLOCK AUDIO: Wake up the AudioContext on user click so end-of-timer sound can play
+        if (btn) {
+          btn.innerText = "Pause Timer";
+          btn.style.backgroundColor = "#ffc107";
+          btn.style.color = "#333";
+        }
+
+        // 3. CLEAR ANY EXISTING INTERVAL BEFORE STARTING
+        clearInterval(timerInterval);
+
         timerInterval = setInterval(() => {
           remainingSeconds--;
-          updateTimerDisplay();
+
+          if (typeof updateTimerDisplay === 'function') {
+            updateTimerDisplay();
+          }
+
           if (remainingSeconds <= 0) {
-          clearInterval(timerInterval);
-            playSelectedSound()          
+            clearInterval(timerInterval);
             isTimerRunning = false;
-            btn.innerText = "Start Timer";
-            btn.style.backgroundColor = "#17a2b8";
-            triggerAlarm();
+
+            if (btn) {
+              btn.innerText = "Start Timer";
+              btn.style.backgroundColor = "#17a2b8";
+            }
+
+            // Trigger selected sound safely
+            try {
+              if (typeof playSound === 'function') {
+                playSound();
+              } else if (typeof playSelectedSound === 'function') {
+                playSelectedSound();
+              }
+            } catch(e) {
+              console.warn("Error playing end sound:", e);
+            }
+
+            if (typeof triggerAlarm === 'function') {
+              triggerAlarm();
+            }
           }
         }, 1000);
       }
     }
+
 
     function stopTimer() {
       if (timerInterval) clearInterval(timerInterval);
