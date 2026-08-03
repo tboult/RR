@@ -684,7 +684,7 @@
           );
         } else {
           showAlert("To save Random Robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'  \n\n To install on iPhone: Tap Share ... and select Add to Home Screen."
-          );
+          ); 
         }
       }
     }
@@ -823,14 +823,26 @@
       return globalAudioCtx;
     }
 
+
     function playSelectedSound() {
       const audioCtx = getAudioContext();
 
-      audioCtx.resume().then(() => {
-        const soundType = document.getElementById('soundSelect') ? document.getElementById('soundSelect').value : 'chime';
+      // 1. Get sound choice from dropdown OR saved memory
+      let soundType = 'chime';
+      const selectElem = document.getElementById('soundSelect');
 
+      if (selectElem && selectElem.value) {
+        soundType = selectElem.value;
+      } else {
+        const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (saved) {
+          try { soundType = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
+        }
+      }
+
+      // 2. Play sound
+      audioCtx.resume().then(() => {
         if (soundType === 'buzzer') {
-          // Game Buzzer (Sawtooth Low Tone)
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
@@ -843,7 +855,6 @@
           osc.stop(audioCtx.currentTime + 0.8);
 
         } else if (soundType === 'bell') {
-          // Double Bell Chime
           [523.25, 659.25].forEach((freq, idx) => {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -858,7 +869,6 @@
           });
 
         } else if (soundType === 'siren') {
-          // High Siren Sweep
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
@@ -885,7 +895,9 @@
           osc.stop(audioCtx.currentTime + 0.5);
         }
       });
-    }
+        }
+
+
 
     function testSound() {
       if (navigator.vibrate) {
