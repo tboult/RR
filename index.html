@@ -1119,6 +1119,7 @@
 
     function toggleTimer() {
       const btn = document.getElementById('start-timer-btn');
+      getAudioContext();
       if (isTimerRunning) {
         clearInterval(timerInterval);
         isTimerRunning = false;
@@ -1134,7 +1135,6 @@
         btn.style.backgroundColor = "#ffc107";
         btn.style.color = "#333";
         // UNLOCK AUDIO: Wake up the AudioContext on user click so end-of-timer sound can play
-        getAudioContext();
         timerInterval = setInterval(() => {
           remainingSeconds--;
           updateTimerDisplay();
