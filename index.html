@@ -855,92 +855,6 @@
         }
       };
 
-      modal.classList.remove('hidden');
-    }
-
-    /* --- PERSISTENT STORAGE --- */
-    function saveSettings() {
-      const numPlayers = parseInt(document.getElementById('numPlayers')?.value, 10) || 8;
-      const maxCourts = parseInt(document.getElementById('maxCourts')?.value, 10) || DEFAULT_MAX_COURTS;
-      const playTime = parseInt(document.getElementById('playTime')?.value, 10) || DEFAULT_PLAY_TIME;
-      const gCount = parseInt(document.getElementById('gameCount')?.value, 10) || 1;
-      const soundChoice = document.getElementById('soundSelect')?.value || 'chime';
-
-      totalPlayers = numPlayers;
-      gameCount = gCount;
-
-      const settings = {
-        numPlayers,
-        maxCourts,
-        playTime,
-        gameCount,
-        soundChoice
-      };
-
-      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
-      const selectedCourts = [];
-      document.querySelectorAll('#court-list input[type="checkbox"]:checked').forEach(cb => {
-          selectedCourts.push(parseInt(cb.dataset.courtNum, 10));
-      });
-
-      localStorage.setItem(STORAGE_KEY_COURTS, JSON.stringify(selectedCourts));
-
-    }
-
-    function loadSettings() {
-      const savedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
-      if (savedSettings) {
-        try {
-          const s = JSON.parse(savedSettings);
-          if (s.numPlayers && document.getElementById('numPlayers')) document.getElementById('numPlayers').value = s.numPlayers;
-          if (s.maxCourts && document.getElementById('maxCourts')) document.getElementById('maxCourts').value = s.maxCourts;
-          if (s.playTime && document.getElementById('playTime')) document.getElementById('playTime').value = s.playTime;
-          if (s.gameCount && document.getElementById('gameCount')) document.getElementById('gameCount').value = s.gameCount;
-          if (s.soundChoice && document.getElementById('soundSelect')) document.getElementById('soundSelect').value = s.soundChoice;
-
-          totalPlayers = parseInt(document.getElementById('numPlayers')?.value, 10) || 8;
-          gameCount = parseInt(document.getElementById('gameCount')?.value, 10) || 1;
-        } catch(e) {
-          console.error("Error loading settings:", e);
-        }
-      }
-    }
-
-
-    /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
-
-    // Declare global audioCtx if not already declared higher up in your script
-    /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
-
-    let audioCtx = null;
-
-    // Synchronously creates/resumes audio context on user interaction
-    function getAudioContext() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-        return audioCtx;
-    }
-
-    // Unlocks audio hardware for PWAs and Laptop browsers
-    function unlockAudioEngine() {
-        const ctx = getAudioContext();
-
-        // Play a tiny silent buffer to force-unlock hardware audio
-        try {
-            const buffer = ctx.createBuffer(1, 1, 22050);
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(ctx.destination);
-            source.start(0);
-        } catch (e) {
-            console.log("Audio unlock attempt:", e);
-        }
-    }
-
     // Keep listening for clicks/taps so desktop browsers never re-suspend audio
     window.addEventListener('touchstart', unlockAudioEngine, { passive: true });
     window.addEventListener('click', unlockAudioEngine);
@@ -958,7 +872,7 @@
 
     function playSound() {
         // 1. Get user's selected sound key from <select id="soundSelect"> or localStorage
-        let selectedKey = 'chime';
+        let selectedKey = 'buzzer';
         const selectElem = document.getElementById('soundSelect');
         
         if (selectElem && selectElem.value) {
@@ -966,12 +880,12 @@
         } else {
             const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
             if (saved) {
-                try { selectedKey = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
+                try { selectedKey = JSON.parse(saved).soundChoice || 'buzzer'; } catch(e){}
             }
         }
 
-        // 2. Fall back to 'chime' if the key doesn't exist in our dictionary
-        const soundDataUri = SOUND_PRESETS[selectedKey] || SOUND_PRESETS.chime;
+        // 2. Fall back to 'buzzer' if the key doesn't exist in our dictionary
+        const soundDataUri = SOUND_PRESETS[selectedKey] || SOUND_PRESETS.buzzer;
 
         // 3. Play using HTML5 Audio element
         try {
