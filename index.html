@@ -347,7 +347,7 @@
       white-space: nowrap;
       color: #333;
       margin-top: 20px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
     }
 
     .timer-display.time-up {
@@ -369,26 +369,35 @@
     }
 
     .btn-start {
-      padding: 20px 4px;
+      padding: 18px 4px;
       font-size: 1.4rem;
       font-weight: bold;
       background-color: #17a2b8;
       color: #ffffff;
-      margin-bottom: 36px;
+      margin-bottom: 12px;
+    }
+
+    .btn-stop {
+      padding: 18px 4px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      background-color: #dc3545;
+      color: #ffffff;
+      margin-bottom: 24px;
     }
 
     .utility-btn-row {
       width: 100%;
       max-width: 420px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
-      margin-bottom: 48px;
+      margin-bottom: 36px;
     }
 
     .btn-sub {
       padding: 12px 2px;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
       font-weight: bold;
       white-space: nowrap;
       border-radius: 6px;
@@ -404,7 +413,7 @@
       padding: 12px;
       font-size: 1rem;
       opacity: 0.85;
-      margin-bottom: 36px;
+      margin-bottom: 24px;
     }
 
     .btn-next-game {
@@ -556,7 +565,6 @@
 
       <!-- Small Control Buttons Row -->
       <div class="btn-row">
-        <button class="btn-small btn-secondary" onclick="testSound()">🔊 Sound</button>
         <button class="btn-small btn-secondary" style="background-color: #28a745;" onclick="triggerInstallPrompt()">📱 Install App</button>
         <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="toggleHelp()">❓ Help</button>
       </div>
@@ -614,17 +622,19 @@
     <!-- 2. Main Start Button -->
     <button class="btn-large btn-start" id="start-timer-btn" onclick="toggleTimer()">Start Timer</button>
 
-    <!-- 3. Secondary Utility Row -->
+    <!-- 3. Full Size Red Stop Timer Button -->
+    <button class="btn-large btn-stop" id="stop-timer-btn" onclick="stopTimer()">Stop / Reset Timer</button>
+
+    <!-- 4. Secondary Utility Row -->
     <div class="utility-btn-row">
       <button class="btn-sub btn-warning" id="edit-timer-btn" onclick="editTimer()">Edit Timer</button>
-      <button class="btn-sub btn-warning" id="stop-timer-btn" onclick="stopTimer()">Reset Timer</button>
       <button class="btn-sub btn-secondary" id="test-sound-btn" onclick="testSound()">Test Sound</button>
     </div>
 
-    <!-- 4. Reshow Game -->
+    <!-- 5. Reshow Game -->
     <button class="btn-large btn-secondary btn-reshow" onclick="reshowGame()">Reshow Game</button>
 
-    <!-- 5. Next Game Assignment -->
+    <!-- 6. Next Game Assignment -->
     <button class="btn-large btn-next-game" onclick="nextGame()">Next Game Assignment ➔</button>
   </div>
 
@@ -1160,9 +1170,48 @@
         assignments.push({ role: 'BYE', court: 'SIT OUT', theme: 'theme-bye' });
       }
 
+      // Initial Fisher-Yates Shuffle
       for (let i = assignments.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+      }
+
+      // Ensure no two back-to-back matching assignments exist
+      const isMatch = (a, b) => a.role === b.role && a.court === b.court;
+      let maxPasses = 100;
+      let hasMatch = true;
+
+      while (hasMatch && maxPasses > 0) {
+        hasMatch = false;
+        maxPasses--;
+
+        for (let i = 1; i < assignments.length; i++) {
+          if (isMatch(assignments[i], assignments[i - 1])) {
+            hasMatch = true;
+            let swapped = false;
+
+            for (let j = 0; j < assignments.length; j++) {
+              if (j === i || j === i - 1) continue;
+
+              const cand = assignments[j];
+              const prevJ = j > 0 ? assignments[j - 1] : null;
+              const nextJ = j < assignments.length - 1 ? assignments[j + 1] : null;
+
+              if (!isMatch(cand, assignments[i - 1]) &&
+                  (!prevJ || !isMatch(assignments[i], prevJ)) &&
+                  (!nextJ || !isMatch(assignments[i], nextJ))) {
+                [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+                swapped = true;
+                break;
+              }
+            }
+
+            if (!swapped) {
+              const r = Math.floor(Math.random() * assignments.length);
+              [assignments[i], assignments[r]] = [assignments[r], assignments[i]];
+            }
+          }
+        }
       }
 
       currentIndex = 0;
@@ -1185,8 +1234,8 @@
       document.getElementById('assignment-game-count').innerText = `Game ${gameCount}`;
 
       if (curr.role === 'BYE') {
-        document.getElementById('top-role-text').innerText = 'BYE';
-        document.getElementById('court-text').innerText = 'BREAK';
+        document.getElementById('top-role-text').innerText = 'BREAK';
+        document.getElementById('court-text').innerText = 'BYE';
         document.getElementById('bottom-role-text').innerText = 'SIT OUT';
       } else {
         document.getElementById('top-role-text').innerText = curr.role;
