@@ -891,7 +891,7 @@
           osc1.type = 'sawtooth';
           osc2.type = 'square';
           osc1.frequency.setValueAtTime(150, now);
-          osc2.frequency.setValueAtTime(156, now); // Dissonant beating
+          osc2.frequency.setValueAtTime(156, now);
 
           gain.gain.setValueAtTime(0.9, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
@@ -1037,7 +1037,6 @@
         navigator.vibrate([400, 200, 400, 200, 400]);
       }
 
-      // Continuously play sound every 1.5 seconds until stopped/reset
       alarmInterval = setInterval(() => {
         playSound();
         if (navigator.vibrate) {
@@ -1161,7 +1160,6 @@
         assignments.push({ role: 'BYE', court: 'SIT OUT', theme: 'theme-bye' });
       }
 
-      // Fisher-Yates shuffle
       for (let i = assignments.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
@@ -1341,7 +1339,10 @@
       document.getElementById('gameCount').value = gameCount;
       saveSettings();
 
-      startAssignments();
+      // Return to Setup Page so player count & courts can be adjusted before starting
+      document.getElementById('end-page').classList.add('hidden');
+      document.getElementById('assignment-page').classList.add('hidden');
+      document.getElementById('setup-page').classList.remove('hidden');
     }
 
     function reshowGame() {
