@@ -239,72 +239,87 @@
     }
 
     /* Assignment Page Styles */
+
+    /* Assignment Page Styles */
     #assignment-page {
-      justify-content: space-between;
-      transition: background-color 0.3s;
-      background-color: white; 
-      user-select: none;
-      -webkit-user-select: none;
-      cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh; /* Ensures full height on mobile browsers */
+        width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+        justify-content: space-between;
+        transition: background-color 0.3s;
+        background-color: white; 
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: pointer;
     }
 
     .top-bar {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 4px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 4px;
     }
 
     .info-right {
-      text-align: right;
+        text-align: right;
     }
 
     #player-counter {
-      font-size: 1.5rem;
-      font-weight: bold;
-      opacity: 0.85;
-      color: #333; 
-      margin: 0;
-      line-height: 1.1;
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+        font-weight: bold;
+        opacity: 0.85;
+        color: #333; 
+        margin: 0;
+        line-height: 1.1;
     }
 
     #assignment-game-count {
-      font-size: 1.1rem;
-      font-weight: bold;
-      opacity: 0.75;
-      color: #333;
-      margin-top: 2px;
+        font-size: clamp(1.1rem, 2vw, 1.8rem);
+        font-weight: bold;
+        opacity: 0.75;
+        color: #333;
+        margin-top: 2px;
     }
 
     .assignment-content {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .large-role-text {
-      font-size: 3.5rem;
-      font-weight: 900;
-      margin: 0;
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        overflow: hidden;
     }
 
-    .large-court-text {
-      font-size: 13.5rem;
-      font-weight: 900;
-      margin: 18px 0;
-      line-height: 0.85;
-      text-transform: uppercase;
+    /* Scales fluidly based on available width or height */
+    .large-role-text {
+        font-size: min(12vw, 10vh);
+        font-weight: 900;
+        margin: 0;
+        line-height: 1;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: center;
     }
-    
+
+    /* Fills the maximum available viewport space on both wide laptops and tall phones */
+    .large-court-text {
+        font-size: min(40vw, 45vh);
+        font-weight: 900;
+        margin: 10px 0;
+        line-height: 0.85;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
     .next-btn-container {
-      width: 100%;
-      padding-bottom: 4px;
+        width: 100%;
+        padding-bottom: 4px;
     }
 
     /* Theme Classes */
@@ -318,52 +333,103 @@
 
     .theme-bye { color: #0288d1; }
     .theme-bye .btn { background-color: #0288d1; color: white; }
-    .theme-bye .btn-small { background-color: #e1f5fe; color: #0288d1; }
+    .theme-bye .btn-small { background-color: #e1f5fe; color: #0288d1; }    
 
     /* End Page Styles */
+
     #end-page {
-      background-color: white;
-      justify-content: space-between;
-      align-items: center;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
     }
-    
+
+    /* 1. Timer Display (Full Width) */
     .timer-display {
-      font-size: 6.5rem;
-      font-weight: 900;
-      margin: 0;
-      line-height: 1;
-      color: #333;
+        width: 100%;
+        font-size: 25vw;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        line-height: 0.9;
+        white-space: nowrap;
+        color: #333;
+        margin-top: 20px;
+        margin-bottom: 40px; /* GAP 1: Spacer below timer */
     }
 
     .timer-display.time-up {
-      color: #d32f2f;
-      animation: pulse 0.8s infinite alternate;
+        color: #d32f2f;
+        animation: pulse 0.8s infinite alternate;
     }
 
     @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); }
+        from { transform: scale(1); }
+        to { transform: scale(1.08); }
     }
 
-    .timer-btn-group {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      gap: 6px;
-      margin-top: 10px;
-      margin-bottom: 8px;
+    /* Base button sizing */
+    .btn-large {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
     }
 
-    .timer-btn-group .btn {
-      margin-bottom: 0;
-      flex: 1;
-      padding: 14px 2px;
-      font-size: 1.25rem;
+    /* 2. Start Timer Button (Large & Full Width) */
+    .btn-start {
+        padding: 20px 4px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        background-color: #17a2b8;
+        color: #ffffff;
+        margin-bottom: 36px; /* GAP 2: Spacer below Start button */
     }
 
-    .btn-success {
-      background-color: #28a745;
+    /* 3. Utility Button Row (3 buttons across) */
+    .utility-btn-row {
+        width: 100%;
+        max-width: 420px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 48px; /* GAP 3: Spacer below sub-buttons */
     }
+
+    .btn-sub {
+        padding: 12px 2px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-warning { background-color: #ffc107; color: #333; }
+    .btn-danger { background-color: #dc3545; color: #ffffff; }
+    .btn-secondary { background-color: #6c757d; color: #ffffff; }
+
+    /* 4. Reshow Game Button */
+    .btn-reshow {
+        padding: 12px;
+        font-size: 1rem;
+        opacity: 0.85;
+        margin-bottom: 36px; /* GAP 4: Spacer below Reshow */
+    }
+
+    /* 5. Next Game Assignment (Large Bottom Button) */
+    .btn-next-game {
+        padding: 20px;
+        font-size: 1.35rem;
+        font-weight: bold;
+        background-color: #28a745;
+        color: #ffffff;
+    }    
 
     /* MODAL OVERLAY STYLES */
     .modal-overlay {
@@ -484,11 +550,14 @@
 
       <div class="input-group">
         <label for="soundSelect">End Sound</label>
-        <select id="soundSelect" onchange="saveSettings()">
-          <option value="chime">Soft Chime (Default)</option>
-          <option value="buzzer">Game Buzzer</option>
-          <option value="bell">Double Bell</option>
-          <option value="siren">High Siren</option>
+        <select id="soundSelect" onchange="saveSettings(); testSound();">
+          <option value="buzzer"> Buzzer</option>
+          <option value="beep"> Beep</option>
+          <option value="success"> Success</option>
+          <option value="error"> error</option>                              
+          <option value="chime">Chime</option>
+          <option value="bell">Bell</option>
+          <option value="alarm">Alarm</option>
         </select>
       </div>      
 
@@ -533,7 +602,7 @@
   <!-- ASSIGNMENT PAGE -->
   <div id="assignment-page" class="page hidden" onclick="handleAssignmentPageClick(event)">
     <div class="top-bar">
-      <button class="btn-small" id="prev-btn" onclick="event.stopPropagation(); showPreviousAssignment();">⬅ Setup</button>
+      <button class="btn-small" id="prev-btn" onclick="event.stopPropagation(); showPreviousAssignment();">⬅ Back</button>
       <div class="info-right">
         <div id="player-counter">Player 1 of 8</div>
         <div id="assignment-game-count">Game 1</div>
@@ -552,34 +621,31 @@
   </div>
 
   <!-- END OF GAME PAGE -->
-  <div id="end-page" class="page hidden">
+  <div id="end-page">
     <div class="top-bar">
-      <button class="btn-small btn-secondary" onclick="goToLastPlayer()">⬅ Previous</button>
+      <button class="btn-small btn-secondary" onclick="goToLastPlayer()">⬅ Back</button>
     </div>
 
-    <div class="assignment-content">
-      <div class="large-court-text" style="color: #333; font-size: 3.5rem; margin-bottom: 0;">All Assigned!</div>
-      
-      <!-- Countdown Timer Display -->
-      <div id="timer-display" class="timer-display">13:00</div>
-      
-      <!-- Timer Controls -->
-      <div class="timer-btn-group">
-        <button class="btn" id="start-timer-btn" style="background-color: #17a2b8;" onclick="toggleTimer()">Start Timer</button>
-        <button class="btn" id="edit-timer-btn" style="background-color: #ffc107; color: #333;" onclick="editTimer()">Edit Timer</button>
-        <button class="btn" id="stop-timer-btn" style="background-color: #dc3545;" onclick="stopTimer()">Stop / Reset</button>
-      </div>
+    <!-- 1. Full Width Timer -->
+    <div id="timer-display" class="timer-display">13:00</div>
 
-      <button class="btn btn-secondary" style="max-width: 420px; padding: 12px; font-size: 1.15rem; margin-bottom: 8px;" onclick="testSound()">🔊 Test Sound & Vibration</button>
+    <!-- 2. Main Start Button -->
+    <button class="btn-large btn-start" id="start-timer-btn" onclick="toggleTimer()">Start Timer</button>
+
+    <!-- 3. Secondary Utility Row -->
+    <div class="utility-btn-row">
+      <button class="btn-sub btn-warning" id="edit-timer-btn" onclick="editTimer()">Edit</button>
+      <button class="btn-sub btn-danger" id="stop-timer-btn" onclick="stopTimer()">Reset</button>
+      <button class="btn-sub btn-secondary" id="test-sound-btn" onclick="testSound()">🔊 Test</button>
     </div>
-    
-    <div class="next-btn-container" style="max-width: 440px; margin: 0 auto;">
-      <button class="btn btn-success" onclick="nextGame()">Next Game</button>
-      <div class="btn-row" style="margin-bottom: 4px;">
-        <button class="btn-small btn-secondary" style="padding: 12px; font-size: 1.15rem;" onclick="reshowGame()">Reshow Game</button>
-      </div>
-    </div>
+
+    <!-- 4. Reshow Game -->
+    <button class="btn-large btn-secondary btn-reshow" onclick="reshowGame()">Reshow Game</button>
+
+    <!-- 5. Next Game Assignment -->
+    <button class="btn-large btn-next-game" onclick="nextGame()">Next Game Assignment ➔</button>
   </div>
+
 
   <script>
     // APP CONSTANTS & STORAGE KEYS
@@ -601,7 +667,6 @@
     let remainingSeconds = playTimeSeconds;
     let timerInterval = null;
     let isTimerRunning = false;
-    let audioCtx = null;
     let alarmInterval = null;
 
     // Deferred install prompt for PWA
@@ -845,7 +910,11 @@
     /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
 
     // Declare global audioCtx if not already declared higher up in your script
+    /* --- AUDIO SYNTHESIZER FOR TIMER END --- */
 
+    let audioCtx = null;
+
+    // Synchronously creates/resumes audio context on user interaction
     function getAudioContext() {
         if (!audioCtx) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -856,40 +925,79 @@
         return audioCtx;
     }
 
-    // Unlocks audio for Installed PWAs on the first tap anywhere
+    // Unlocks audio hardware for PWAs and Laptop browsers
     function unlockAudioEngine() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        const ctx = getAudioContext();
 
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-
-        // Play a tiny silent buffer to force unlock hardware audio in Standalone PWA mode
+        // Play a tiny silent buffer to force-unlock hardware audio
         try {
-            const buffer = audioCtx.createBuffer(1, 1, 22050);
-            const source = audioCtx.createBufferSource();
+            const buffer = ctx.createBuffer(1, 1, 22050);
+            const source = ctx.createBufferSource();
             source.buffer = buffer;
-            source.connect(audioCtx.destination);
+            source.connect(ctx.destination);
             source.start(0);
         } catch (e) {
             console.log("Audio unlock attempt:", e);
         }
-
-        // Remove listeners once audio hardware is activated
-        window.removeEventListener('touchstart', unlockAudioEngine);
-        window.removeEventListener('click', unlockAudioEngine);
     }
 
-    // Listen for first interaction
+    // Keep listening for clicks/taps so desktop browsers never re-suspend audio
     window.addEventListener('touchstart', unlockAudioEngine, { passive: true });
     window.addEventListener('click', unlockAudioEngine);
 
+    /* --- EMBEDDED BASE64 SOUND PRESETS --- */
+    const SOUND_PRESETS = {
+        buzzer: "data:audio/wav;base64,UklGRoQJAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YWAJAAAyyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMgyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjLIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMgyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMsjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyDIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMsjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjI=",
+        beep: "data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAAB/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKfzQGBjR/yvj4yn80BgY0f8r4+Mp/NAYGNH/K+PjKf智慧",
+        success: "data:audio/wav;base64,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",
+        error: "data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAAB/nbnS5vX9/vns2sOojG5RNyEQBAACChktRmF+m7fP4/P8/vvw4Muyl3peQysYCgIABA8fNExnhKC60eXz/P778eLOtpyAZUoyHg4EAAEJFig+V3KNqMHX6PX9/vrw4s63noNoTjciEgYAAAUQHzNKY32Yscjc7Pf9/vnv4M23n4VrUTomFQkCAAMLGCk+VW6IobnP4e/5/v757+DOuaGIb1ZAKxoNBAABBhAfMUZddo6mvdHj8Pn+/vnw49K+qJB4YEk0IhMIAgACCBMiNEhfdo6lu8/g7ff9/vz16tvJtZ+IcVpFMSATCAIAAQcRHi9CVm2Dmq/E1eXx+f7++/Tp28u4o413YUw5JxkNBQAAAwkTITFDV2yBl6y/0eDt9vz+/fnx5tjHtaGMd2JOPCscEAgCAAEFDRclNEZZbYKWqrzN3Onz+v7+/Pbu4tTEs6CMeWVSQC8hFQsEAAACBw8ZJjVFV2p9kaO1xtXi7fX7/v789u7k18i4p5WCcF1MOywfFAsFAQABBQsUHyw6Slttf5Gjs8PS3uny+f3+/vv17eTYy7ysm4p5aFdHOCseFAwGAQAAAwgOFyIuPEtaa3uMnKy7ydbh6/P5/P7+/Pjx6eDUyLqrnIx9bV1OQDMnHBMMBgIAAAEFChEaJC88SVdmdYSTorC9ytXg6fD2+/3+/vv38uvi2c7CtaiajH5vYVRHOi8kGxMMBwMAAAACBgsRGCErNkFNWmd0go+cqbbBzNbf6O70+fz+/v78+PTu5+DXzcO4rKCUh3tuYlZLQDUsIxsUDgkFAgAAAAIFCA0TGiEqMz1HUVxoc3+KlaGrtsDJ0tri6e7z9/v9/v7+/Pr38u3o4drSysG4rqSakIV7cGZcUklANy8nIBoUDwsHBAIAAAAAAgQHCw8UGiAmLTU9RU1WX2hxeoSNlp+nsLjAx8/V3OHn7PD09/r8/f7+/v78+vj18u7q5eDa1M7IwbqzrKSclY2FfXZuZl9YUUpDPDYwKiUgGxcTDwwJBwQDAQAAAAAAAQIEBggLDhEUGBwgJSovNDk+RElPVVthZ21zeX+Fi5GXnKKorbK4vcHGy8/T19vf4+bp7O7x8/X3+fr7/P3+/v7+/v79/fz7+vj39fPy7+3r6ebj4d7b2NXSzsvIxMG+urezr6yopaGdmpaTj4uIhIF9endzcG1pZmNgXVpXVFFOS0lGREE/PDo4NTMxLy0rKSclJCIgHx0cGhkYFxUUExIREA8ODQwMCwoJCQgIBwYGBQUFBAQDAwMDAgICAgEBAQEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAQEBAgICAgMDAwMEBAUFBQYGBwgICQkKCwwMDQ4PEBESExQVFxgZGhwdHyAiJCUnKSstLzEzNTg6PD9BREZJS05RVFdaXWBjZmltcHN3en2BhIiLj5OWmp2hpaisr7O3ur7BxMjLztLV2Nve4ePm6evt7/Lz9ff4+vv8/f3+/v7+/v79/Pv6+ff18/Hu7Onm49/b19PPy8bBvbiyraiinJeRi4V/eXNtZ2FbVU9JRD45NC8qJSAcGBQRDgsIBgQCAQAAAAAAAQMEBwkMDxMXGyAlKjA2PENKUVhfZm52fYWNlZykrLO6wcjO1Nrg5eru8vX4+vz+/v7+/fz69/Tw7Ofh3NXPx8C4sKeflo2EenFoX1ZNRT01LSYgGhQPCwcEAgAAAAACBAcLDxQaICcvN0BJUlxmcHuFkJqkrrjBytLa4ejt8vf6/P7+/v379/Pu6eLa0snAtquhlYp/c2hcUUc9MyohGhMNCAUCAAAAAgUJDhQbIyw1QEtWYm57h5SgrLjDzdfg5+70+Pz+/v78+fTu6N/WzMG2qZyPgnRnWk1BNishGBELBgIAAAADBwwTGyQvOkdUYW9+jJqotcLO2eLr8vf7/v79+/bw6eDVyr2wopOEdWZXSTwvJBoRCgUBAAACBgwTHCczQE5dbX2MnKu6yNTg6fH4/P7+/Pnz6+HWybusnIx7a1pLPC4iFw4IAwAAAQYMFB4rOEdXaHmKm6y8y9jk7fX7/v79+fLp3tLDs6ORf21bSjosHxQLBQEAAQULFB8sO0xdcIKVp7jI1+Tu9vz+/vv17eLVxrWjkX1qV0U1JhkPBwIAAAQLFSEvQFJleYygs8TU4u72/P7++vPp3M28qpaCbVlGNCUXDQUBAAIIEBwrPE5id4yhtcfY5vH5/f789u3g0b+sl4FsV0MxIRMJAwAABQ0ZJzlMYXeNo7jL2+n0+/7++fHl1cSvmoNtVkIvHhEHAQACCBMgMUVacYiftcnb6vX8/v337eDPu6WOdl9INCITCAIAAggTIjRJYHiQqL7S4/D5/v758OPRvaaOdl1GMR8QBgEABA0aK0BWb4ihuc7g7/n+/vnv4c+5oYhuVT4pGAsDAAIJFSY6UWuFn7fN4O/5/v337NzIsZh9Y0ozHxAFAAAGEiI3TmiDnrfO4vD6/v316NfBqI1yVz4oFgkBAAQOHjJKZYCcts7i8fv+/PPl0bqghGdMNB8PBAACChgrQ156l7LL4PD7/vzz48+3m35hRi0ZCgIABBAhN1FujKjD2uz5/v315tK5nQ==",
+        chime: "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFb210fX54dHVsboCAgoeNjpCNi4uJi4qKj4+QkJCSkpKTk5OVlZaXmJicnJ2en56foKGipKWmp6ipqqutrrCxsrOztLW2t7i5urq7vL29v7/BwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvd3eDh4uPk5ebn6Onq7O3u8A==",
+        bell: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVtvT1+Ag4SFiIqMj5GSk5WVl5iZnJ2en6ChoqSmp6ipqqusrS8vMDEyMzU2ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXF1eX2BhYmNkZWZnaGlqa2xtbm9wcXIzNDU2T19vT18=",
+        alarm: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YVtvT1+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/gP+Av4D/gL+A/4C/T19vT18="
+};    
+
+    function playSound() {
+        // 1. Get user's selected sound key from <select id="soundSelect"> or localStorage
+        let selectedKey = 'chime';
+        const selectElem = document.getElementById('soundSelect');
+        
+        if (selectElem && selectElem.value) {
+            selectedKey = selectElem.value;
+        } else {
+            const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+            if (saved) {
+                try { selectedKey = JSON.parse(saved).soundChoice || 'chime'; } catch(e){}
+            }
+        }
+
+        // 2. Fall back to 'chime' if the key doesn't exist in our dictionary
+        const soundDataUri = SOUND_PRESETS[selectedKey] || SOUND_PRESETS.chime;
+
+        // 3. Play using HTML5 Audio element
+        try {
+            const audio = new Audio(soundDataUri);
+            audio.volume = 1.0;
+
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch((error) => {
+                    console.warn("Chromium playback blocked: Tap anywhere on the page first.", error);
+                });
+            }
+        } catch (err) {
+            console.error("Audio error:", err);
+        }
+    }
+
+    // Alias to ensure older button references don't crash
     function playSelectedSound() {
+        playSound();
+    }    
+
+
+    function oldplaySelectedSound() {
         const activeCtx = getAudioContext();
 
-        // 1. Get sound choice from dropdown OR saved memory
         let soundType = 'chime';
         const selectElem = document.getElementById('soundSelect');
 
@@ -902,61 +1010,107 @@
             }
         }
 
-        // 2. Play sound
+        // Force-resume context for laptop autoplay safety
         activeCtx.resume().then(() => {
+            const now = activeCtx.currentTime;
+
             if (soundType === 'buzzer') {
+                // LOUD Harsh Buzzer
                 const osc = activeCtx.createOscillator();
                 const gain = activeCtx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, activeCtx.currentTime);
-                gain.gain.setValueAtTime(0.3, activeCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.8);
+                osc.frequency.setValueAtTime(180, now);
+                
+                gain.gain.setValueAtTime(0.9, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                
                 osc.connect(gain);
                 gain.connect(activeCtx.destination);
-                osc.start();
-                osc.stop(activeCtx.currentTime + 0.8);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                osc.start(now);
+                osc.stop(now + 0.8);
 
             } else if (soundType === 'bell') {
-                [523.25, 659.25].forEach((freq, idx) => {
+                // Dual-tone Loud Bell
+                [523.25, 659.25, 783.99].forEach((freq, idx) => {
                     const osc = activeCtx.createOscillator();
                     const gain = activeCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, activeCtx.currentTime + (idx * 0.15));
-                    gain.gain.setValueAtTime(0.3, activeCtx.currentTime + (idx * 0.15));
-                    gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + (idx * 0.15) + 0.6);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + (idx * 0.12));
+                    
+                    gain.gain.setValueAtTime(0.9, now + (idx * 0.12));
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.12) + 0.7);
+                    
                     osc.connect(gain);
                     gain.connect(activeCtx.destination);
-                    osc.start(activeCtx.currentTime + (idx * 0.15));
-                    osc.stop(activeCtx.currentTime + (idx * 0.15) + 0.6);
+                    
+                    osc.start(now + (idx * 0.12));
+                    osc.stop(now + (idx * 0.12) + 0.7);
                 });
 
             } else if (soundType === 'siren') {
+                // High-pitched Piercing Siren
                 const osc = activeCtx.createOscillator();
                 const gain = activeCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, activeCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1200, activeCtx.currentTime + 0.4);
-                gain.gain.setValueAtTime(0.2, activeCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.5);
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(700, now);
+                osc.frequency.exponentialRampToValueAtTime(1400, now + 0.5);
+                
+                gain.gain.setValueAtTime(0.9, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                
                 osc.connect(gain);
                 gain.connect(activeCtx.destination);
-                osc.start();
-                osc.stop(activeCtx.currentTime + 0.5);
+                
+                osc.start(now);
+                osc.stop(now + 0.6);
 
             } else {
-                // Default Soft Chime
-                const osc = activeCtx.createOscillator();
-                const gain = activeCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, activeCtx.currentTime);
-                gain.gain.setValueAtTime(0.3, activeCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, activeCtx.currentTime + 0.5);
-                osc.connect(gain);
-                gain.connect(activeCtx.destination);
-                osc.start();
-                osc.stop(activeCtx.currentTime + 0.5);
+                // Default Loud Double Chime
+                [880, 1760].forEach((freq) => {
+                    const osc = activeCtx.createOscillator();
+                    const gain = activeCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now);
+                    
+                    gain.gain.setValueAtTime(0.95, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                    
+                    osc.connect(gain);
+                    gain.connect(activeCtx.destination);
+                    
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                });
             }
+        }).catch((err) => {
+            console.error("Audio playback error:", err);
         });
+    } // FIXED: Added missing closing brace for playSelectedSound()
+
+    // Alias so both function names work across your script
+    function oldplaySound() {
+        oldplaySelectedSound();
     }
 
     function testSound() {
@@ -965,25 +1119,26 @@
         }
         playSelectedSound();
     }
-    
+
     function onGameCountInputChange() {
-      saveSettings();
+        saveSettings();
     }
 
     function resetGameCount() {
-      document.getElementById('gameCount').value = 1;
-      saveSettings();
+        document.getElementById('gameCount').value = 1;
+        saveSettings();
     }
 
     function onPlayTimeInputChange() {
-      saveSettings();
-      const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
-      playTimeSeconds = mins * 60;
-      if (!isTimerRunning) {
-        remainingSeconds = playTimeSeconds;
-        updateTimerDisplay();
-      }
+        saveSettings();
+        const mins = parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME;
+        playTimeSeconds = mins * 60;
+        if (!isTimerRunning) {
+            remainingSeconds = playTimeSeconds;
+            updateTimerDisplay();
+        }
     }
+
 
     /* --- COURT CHECKBOX GENERATION --- */
     function generateCheckboxes() {
@@ -1414,7 +1569,6 @@
         .then(() => console.log('Service Worker Registered'))
         .catch((err) => console.error('SW Registration Failed:', err));
     }
-    /
     // 1. Display active cache version on the page
     if ('caches' in window) {
         caches.keys().then((cacheNames) => {
