@@ -115,56 +115,51 @@
       background-color: white;
     }
     
-    /* COURT SELECTION LIST */
+    /* COURT SELECTION 4-COLUMN GRID */
     #setup-page .court-list {
-      text-align: left;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
       margin: 2px 0 4px 0;
-      max-height: 280px;
+      max-height: 200px;
       overflow-y: auto;
       border: 2px solid #eee;
-      padding: 2px 8px;
+      padding: 6px;
       border-radius: 8px;
       position: relative;
     }
 
     #setup-page .court-item {
-      padding: 4px 0;
+      padding: 6px 4px;
       font-size: 1.1rem;
       font-weight: bold;
       display: flex;
       align-items: center;
-      border-bottom: 1px solid #f0f0f0;
+      justify-content: center;
+      gap: 4px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background-color: #f8fafc;
     }
 
-    #setup-page .court-item input {
-      width: 20px;
-      height: 20px;
-      margin-right: 12px;
+    #setup-page .court-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+      pointer-events: auto !important;
+    }
+
+    #setup-page .court-item label {
+      cursor: pointer;
+      user-select: none;
+      font-size: 1.1rem;
     }
 
     #court-list {
       position: relative;
       z-index: 1;
     }
-
-    .court-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .court-item input[type="checkbox"] {
-      pointer-events: auto !important;
-      cursor: pointer;
-      width: 18px;
-      height: 18px;
-    }
-
-    .court-item label {
-      cursor: pointer;
-      user-select: none;
-    }    
 
     .btn {
       padding: 12px;
@@ -622,9 +617,9 @@
 
     <!-- 3. Secondary Utility Row -->
     <div class="utility-btn-row">
-      <button class="btn-sub btn-warning" id="edit-timer-btn" onclick="editTimer()">Edit</button>
-      <button class="btn-sub btn-danger" id="stop-timer-btn" onclick="stopTimer()">Reset</button>
-      <button class="btn-sub btn-secondary" id="test-sound-btn" onclick="testSound()">🔊 Test</button>
+      <button class="btn-sub btn-warning" id="edit-timer-btn" onclick="editTimer()">Edit Timer</button>
+      <button class="btn-sub btn-danger" id="stop-timer-btn" onclick="stopTimer()">Reset Timer</button>
+      <button class="btn-sub btn-secondary" id="test-sound-btn" onclick="testSound()">🔊 Test Sound</button>
     </div>
 
     <!-- 4. Reshow Game -->
@@ -961,7 +956,7 @@
 
         const label = document.createElement('label');
         label.htmlFor = `court-${i}`;
-        label.innerText = `Court ${i}`;
+        label.innerText = i;
 
         div.appendChild(cb);
         div.appendChild(label);
