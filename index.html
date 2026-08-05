@@ -89,20 +89,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
-    .splash-default-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .splash-app-logo {
-      width: 120px;
-      height: 120px;
-      border-radius: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
     .splash-footer-note {
       position: absolute;
       bottom: 24px;
@@ -565,14 +551,11 @@
 
   <!-- SPLASH PAGE -->
   <div id="splash-page" onclick="dismissSplash()">
-    <div class="splash-top-title">Random Robin</div>
+    <div id="splash-title" class="splash-top-title">Random Robin</div>
     <div class="splash-container">
-      <img id="splash-img" src="" alt="Branding Logo" class="splash-logo hidden">
-      <div id="splash-default" class="splash-default-content">
-        <img src="icon-192.png" alt="Random Robin Logo" class="splash-app-logo" onerror="this.style.display='none'">
-      </div>
+      <img id="splash-img" src="splash.png" alt="Branding Logo" class="splash-logo">
     </div>
-    <div class="splash-footer-note">See help to replace branding with your own image</div>
+    <div class="splash-footer-note">Tap screen to begin. <br> See help for customization options </div>
   </div>
 
   <!-- MODAL DIALOG -->
@@ -671,9 +654,12 @@
           <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random Robin directly to your phone for quick offline access!</li>
         </ul>
 
-        <!-- CUSTOM BRANDING LOGO URL FIELD -->
+        <!-- CUSTOM BRANDING FIELDS -->
         <div class="input-group" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 8px;">
-          <label for="brandingUrl" style="color: #007bff;">Custom Branding Image URL:</label>
+          <label for="customBrandingText" style="color: #007bff;">Custom Group / Club Name:</label>
+          <input type="text" id="customBrandingText" placeholder="e.g. Oak Creek Pickleball" onchange="saveSettings()" oninput="saveSettings()" style="font-size: 0.9rem; font-weight: normal; margin-bottom: 6px;">
+
+          <label for="brandingUrl" style="color: #007bff;">Online Logo URL (Optional):</label>
           <input type="text" id="brandingUrl" placeholder="https://example.com/logo.png" onchange="saveSettings()" oninput="saveSettings()" style="font-size: 0.9rem; font-weight: normal;">
         </div>
       </div>
@@ -735,7 +721,6 @@
     const APP_NAME = "Random Robin";
     const DEFAULT_MAX_COURTS = 20;
     const DEFAULT_PLAY_TIME = 13;
-    const DEFAULT_SPLASH_IMAGE = "https://tgcstorage.blob.core.windows.net/court-reserve-9090/SCPB-LOGO.png";
 
     const STORAGE_KEY_SETTINGS = 'random_robin_app_settings';
     const STORAGE_KEY_COURTS = 'random_robin_checked_courts';
@@ -805,30 +790,41 @@
       showNextAssignment();
     }
 
-    /* --- SPLASH SCREEN CONTROLS --- */
+    /* --- SPLASH PAGE CONTROLS --- */
     function initSplashPage() {
+      const customText = (document.getElementById('customBrandingText').value || '').trim();
       const brandingUrl = (document.getElementById('brandingUrl').value || '').trim();
-      const targetUrl = brandingUrl || DEFAULT_SPLASH_IMAGE;
+
+      const splashTitle = document.getElementById('splash-title');
       const splashImg = document.getElementById('splash-img');
-      const splashDefault = document.getElementById('splash-default');
 
-      if (targetUrl) {
-        splashImg.src = targetUrl;
-        splashImg.classList.remove('hidden');
-        splashDefault.classList.add('hidden');
+      // 1. Text Handling (Always works offline from LocalStorage)
+      splashTitle.innerText = customText || APP_NAME;
 
-        splashImg.onerror = function() {
-          splashImg.classList.add('hidden');
-          splashDefault.classList.remove('hidden');
-        };
+      // 2. Image Handling with Offline Fallback
+      splashImg.style.display = 'block';
+
+      if (brandingUrl && navigator.onLine) {
+        splashImg.src = brandingUrl;
       } else {
-        splashImg.classList.add('hidden');
-        splashDefault.classList.remove('hidden');
+        // Fallback to local image hosted on GitHub
+        splashImg.src = 'splash.png';
       }
+
+      // Gracefully handle missing or broken images
+      splashImg.onerror = function() {
+        if (this.src !== location.origin + '/splash.png') {
+          // If external URL failed, attempt to load local GitHub splash.png
+          this.src = 'splash.png';
+        } else {
+          // If no local image exists either, hide the image element smoothly
+          this.style.display = 'none';
+        }
+      };
 
       splashTimeout = setTimeout(() => {
         dismissSplash();
-      }, 5000);
+      }, 4000);
     }
 
     function dismissSplash() {
@@ -876,6 +872,7 @@
         playTime: parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME,
         maxCourts: parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS,
         soundChoice: document.getElementById('soundSelect').value || 'buzzer',
+        customText: document.getElementById('customBrandingText').value.trim(),
         brandingUrl: document.getElementById('brandingUrl').value.trim()
       };
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
@@ -900,6 +897,7 @@
           if (settings.playTime) document.getElementById('playTime').value = settings.playTime;
           if (settings.maxCourts) document.getElementById('maxCourts').value = settings.maxCourts;
           if (settings.soundChoice) document.getElementById('soundSelect').value = settings.soundChoice;
+          if (settings.customText !== undefined) document.getElementById('customBrandingText').value = settings.customText;
           if (settings.brandingUrl !== undefined) document.getElementById('brandingUrl').value = settings.brandingUrl;
         } catch(e) {}
       }
