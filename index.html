@@ -635,7 +635,8 @@
       <!-- Small Control Buttons Row -->
       <div class="btn-row">
         <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="triggerInstallPrompt()">📱 Install App</button>
-        <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="toggleHelp()">❓ Help</button>
+        <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="resetAndUninstallApp()">🗑️ Reset / Uninstall</button>
+        <button class="btn-small btn-secondary" style="background-color: #47a28;" onclick="toggleHelp()">❓ Help</button>
       </div>
 
       <!-- Expandable Help Box -->
@@ -1536,6 +1537,49 @@
       document.getElementById('end-page').classList.add('hidden');
       document.getElementById('assignment-page').classList.remove('hidden');
       renderCurrentAssignment();
+    }
+    async function resetAndUninstallApp() {
+        showConfirm(
+            "This will clear all saved app data, remove offline caches, and unregister the app.\n\nDo you want to proceed?",
+            "Reset App Data",
+            "Yes, Clear App",
+            "Cancel",
+            async () => {
+                // 1. Clear Local & Session Storage
+                localStorage.clear();
+                sessionStorage.clear();
+
+                // 2. Unregister Service Workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (let registration of registrations) {
+                        await registration.unregister();
+                    }
+                }
+
+                // 3. Clear Offline Cache Storage
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (let key of keys) {
+                        await caches.delete(key);
+                    }
+                }
+
+                // 4. Show manual uninstall instructions based on device
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (isIOS) {
+                    showAlert(
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random Robin icon on your Home Screen.\n2. Tap 'Remove App' ➔ 'Delete App'.",
+                        "App Data Cleared"
+                    );
+                } else {
+                    showAlert(
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random Robin icon on your app drawer/home screen.\n2. Tap 'Uninstall' or drag to the top bin.",
+                        "App Data Cleared"
+                    );
+                }
+            }
+        );
     }
   </script>
 
