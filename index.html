@@ -642,7 +642,7 @@
       <!-- Expandable Help Box -->
       <div id="help-box" class="help-box hidden">
         <h3>📖 App Instructions & Help</h3>
-        <p><strong>App Purpose:</strong> Generates randomized player court assignments (Servers, Receivers, or Bye) for group pickleball round-robin sessions.</p>
+        <p><strong>App Purpose:</strong> Generates randomized player court assignments (Servers, Receivers, or Bye) for group pickleball round-robin sessions.</p> 
         <p><strong>How to Use:</strong></p>
         <ul>
           <li><strong>#Players:</strong> Enter total players present. Calculates needed courts and Bye breaks automatically.</li>
@@ -1294,10 +1294,10 @@
       const activeCourtsToUse = selectedCourts.slice(0, Math.floor(numPlayers / 4));
 
       activeCourtsToUse.forEach(cNum => {
-        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-red' });
-        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-red' });
-        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-silver' });
-        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-silver' });
+        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
+        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
+        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
       });
 
       const assignedCount = assignments.length;
