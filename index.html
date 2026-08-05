@@ -40,6 +40,60 @@
     .hidden {
       display: none !important;
     }
+
+    /* Splash Screen Styles */
+    #splash-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #0f172a;
+      color: white;
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s ease;
+      cursor: pointer;
+    }
+
+    .splash-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .splash-logo {
+      max-width: 80vw;
+      max-height: 50vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .splash-default-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .splash-app-logo {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .splash-default-content h1 {
+      font-size: 2.2rem;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
     
     /* Setup Page Styles */
     #setup-page {
@@ -104,7 +158,7 @@
       text-overflow: ellipsis;
     }
     
-    .input-group input[type="number"], .input-group select {
+    .input-group input[type="number"], .input-group input[type="text"], .input-group select {
       width: 100%;
       padding: 6px 8px;
       font-size: 1.1rem;
@@ -489,6 +543,17 @@
 </head>
 <body>
 
+  <!-- SPLASH PAGE -->
+  <div id="splash-page" onclick="dismissSplash()">
+    <div class="splash-container">
+      <img id="splash-img" src="" alt="Branding Logo" class="splash-logo hidden">
+      <div id="splash-default" class="splash-default-content">
+        <img src="icon-192.png" alt="Random Robin Logo" class="splash-app-logo" onerror="this.style.display='none'">
+        <h1>Random Robin</h1>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL DIALOG -->
   <div id="custom-modal" class="modal-overlay hidden">
     <div class="modal-box">
@@ -503,7 +568,7 @@
   </div>
 
   <!-- SETUP PAGE -->
-  <div id="setup-page" class="page">
+  <div id="setup-page" class="page hidden">
     <div class="setup-container">
       <div class="header-branding">
         <img src="icon-192.png" alt="Random Robin Logo" class="app-logo-img" onerror="this.style.display='none'">
@@ -584,6 +649,12 @@
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
           <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random Robin directly to your phone for quick offline access!</li>
         </ul>
+
+        <!-- CUSTOM BRANDING LOGO URL FIELD -->
+        <div class="input-group" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 8px;">
+          <label for="brandingUrl" style="color: #007bff;">Custom Branding Image URL:</label>
+          <input type="text" id="brandingUrl" placeholder="https://example.com/logo.png" onchange="saveSettings()" oninput="saveSettings()" style="font-size: 0.9rem; font-weight: normal;">
+        </div>
       </div>
 
     </div>
@@ -652,6 +723,7 @@
     let currentIndex = 0;
     let totalPlayers = 8;
     let gameCount = 1;
+    let splashTimeout = null;
 
     // Timer & Alarm Variables
     let playTimeSeconds = DEFAULT_PLAY_TIME * 60;
@@ -711,6 +783,46 @@
       showNextAssignment();
     }
 
+    /* --- SPLASH SCREEN CONTROLS --- */
+    function initSplashPage() {
+      const brandingUrl = (document.getElementById('brandingUrl').value || '').trim();
+      const splashImg = document.getElementById('splash-img');
+      const splashDefault = document.getElementById('splash-default');
+
+      if (brandingUrl) {
+        splashImg.src = brandingUrl;
+        splashImg.classList.remove('hidden');
+        splashDefault.classList.add('hidden');
+
+        splashImg.onerror = function() {
+          splashImg.classList.add('hidden');
+          splashDefault.classList.remove('hidden');
+        };
+      } else {
+        splashImg.classList.add('hidden');
+        splashDefault.classList.remove('hidden');
+      }
+
+      splashTimeout = setTimeout(() => {
+        dismissSplash();
+      }, 2500);
+    }
+
+    function dismissSplash() {
+      if (splashTimeout) {
+        clearTimeout(splashTimeout);
+        splashTimeout = null;
+      }
+      const splash = document.getElementById('splash-page');
+      if (splash && !splash.classList.contains('hidden')) {
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.classList.add('hidden');
+          document.getElementById('setup-page').classList.remove('hidden');
+        }, 500);
+      }
+    }
+
     window.onload = function() {
       document.title = APP_NAME;
       document.getElementById('app-heading').innerText = APP_NAME;
@@ -730,6 +842,7 @@
       updateTimerDisplay();
 
       generateCheckboxes();
+      initSplashPage();
     };
 
     /* --- PERSISTENCE LOGIC --- */
@@ -739,7 +852,8 @@
         gameCount: parseInt(document.getElementById('gameCount').value, 10) || 1,
         playTime: parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME,
         maxCourts: parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS,
-        soundChoice: document.getElementById('soundSelect').value || 'buzzer'
+        soundChoice: document.getElementById('soundSelect').value || 'buzzer',
+        brandingUrl: document.getElementById('brandingUrl').value.trim()
       };
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
 
@@ -763,6 +877,7 @@
           if (settings.playTime) document.getElementById('playTime').value = settings.playTime;
           if (settings.maxCourts) document.getElementById('maxCourts').value = settings.maxCourts;
           if (settings.soundChoice) document.getElementById('soundSelect').value = settings.soundChoice;
+          if (settings.brandingUrl !== undefined) document.getElementById('brandingUrl').value = settings.brandingUrl;
         } catch(e) {}
       }
     }
