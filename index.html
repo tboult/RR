@@ -52,10 +52,25 @@
       color: white;
       z-index: 10000;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       transition: opacity 0.5s ease;
       cursor: pointer;
+    }
+
+    .splash-top-title {
+      position: absolute;
+      top: 32px;
+      width: 100%;
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #ffffff;
+      margin: 0;
+      padding: 0 16px;
+      box-sizing: border-box;
     }
 
     .splash-container {
@@ -88,11 +103,16 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
-    .splash-default-content h1 {
-      font-size: 2.2rem;
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: 1px;
+    .splash-footer-note {
+      position: absolute;
+      bottom: 24px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      opacity: 0.8;
+      text-align: center;
+      width: 100%;
+      padding: 0 16px;
+      box-sizing: border-box;
     }
     
     /* Setup Page Styles */
@@ -545,13 +565,14 @@
 
   <!-- SPLASH PAGE -->
   <div id="splash-page" onclick="dismissSplash()">
+    <div class="splash-top-title">Random Robin</div>
     <div class="splash-container">
       <img id="splash-img" src="" alt="Branding Logo" class="splash-logo hidden">
       <div id="splash-default" class="splash-default-content">
         <img src="icon-192.png" alt="Random Robin Logo" class="splash-app-logo" onerror="this.style.display='none'">
-        <h1>Random Robin</h1>
       </div>
     </div>
+    <div class="splash-footer-note">See help to replace branding with your own image</div>
   </div>
 
   <!-- MODAL DIALOG -->
@@ -714,6 +735,7 @@
     const APP_NAME = "Random Robin";
     const DEFAULT_MAX_COURTS = 20;
     const DEFAULT_PLAY_TIME = 13;
+    const DEFAULT_SPLASH_IMAGE = "https://tgcstorage.blob.core.windows.net/court-reserve-9090/SCPB-LOGO.png";
 
     const STORAGE_KEY_SETTINGS = 'random_robin_app_settings';
     const STORAGE_KEY_COURTS = 'random_robin_checked_courts';
@@ -786,11 +808,12 @@
     /* --- SPLASH SCREEN CONTROLS --- */
     function initSplashPage() {
       const brandingUrl = (document.getElementById('brandingUrl').value || '').trim();
+      const targetUrl = brandingUrl || DEFAULT_SPLASH_IMAGE;
       const splashImg = document.getElementById('splash-img');
       const splashDefault = document.getElementById('splash-default');
 
-      if (brandingUrl) {
-        splashImg.src = brandingUrl;
+      if (targetUrl) {
+        splashImg.src = targetUrl;
         splashImg.classList.remove('hidden');
         splashDefault.classList.add('hidden');
 
@@ -805,7 +828,7 @@
 
       splashTimeout = setTimeout(() => {
         dismissSplash();
-      }, 2500);
+      }, 5000);
     }
 
     function dismissSplash() {
