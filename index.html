@@ -1380,6 +1380,8 @@
         document.getElementById('bottom-role-text').innerText = curr.role;
       }
 
+        navigator.vibrate([250, 100]);        
+
       const nextBtn = document.getElementById('next-btn');
       if (currentIndex === assignments.length - 1) {
         nextBtn.innerText = "Finish Assignments";
