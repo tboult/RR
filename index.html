@@ -1034,50 +1034,50 @@
         const ctx = getAudioContext();
         const now = ctx.currentTime;
 
-
+    masterGain=1.5
     if (selectedKey === 'radar') {
     // iPhone-style Radar (Sequenced marimba/bell pings)
-    const playPing = (time, freq) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine'; // Smooth tone for a bell sound
-    osc.frequency.setValueAtTime(freq, time);
+        const playPing = (time, freq) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine'; // Smooth tone for a bell sound
+            osc.frequency.setValueAtTime(freq, time);
     
-    gain.gain.setValueAtTime(1.0, time);
-    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3); // Quick fade out
+            gain.gain.setValueAtTime(1.0, time);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3); // Quick fade out
+            
+            osc.connect(gain);
+            gain.connect(masterGain);
+            osc.start(time);
+            osc.stop(time + 0.3);
+        };
     
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(time);
-    osc.stop(time + 0.3);
-    };
-    
-    // The recognizable radar sequence
-    playPing(now, 750);
-    playPing(now + 0.25, 750);
-    playPing(now + 0.5, 750);
-    playPing(now + 0.75, 750);
-    playPing(now + 1.0, 950); 
-
+        // The recognizable radar sequence
+        playPing(now, 750);
+        playPing(now + 0.25, 750);
+        playPing(now + 0.5, 750);
+        playPing(now + 0.75, 750);
+        playPing(now + 1.0, 950); 
+        
     } else if (selectedKey === 'extreme_buzzer') {
-    // Extremely Loud Buzzer (Harsh square wave + slight distortion)
-    const osc = ctx.createOscillator();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(150, now);
+        // Extremely Loud Buzzer (Harsh square wave + slight distortion)
+        const osc = ctx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, now);
     
-    // Pitch flutter for maximum annoyance/loudness
-    osc.frequency.linearRampToValueAtTime(160, now + 0.1);
-    osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+        // Pitch flutter for maximum annoyance/loudness
+        osc.frequency.linearRampToValueAtTime(160, now + 0.1);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(1.0, now); // Maxed out
+        gain.gain.setValueAtTime(1.0, now + 0.8);
+        gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
     
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(1.0, now); // Maxed out
-    gain.gain.setValueAtTime(1.0, now + 0.8);
-    gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
-    
-    osc.connect(gain);
-    gain.connect(masterGain);
-    osc.start(now);
-    osc.stop(now + 1.0);
+        osc.connect(gain);
+        gain.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + 1.0);
 
     } else if (selectedKey === 'buzzer') {
           const osc1 = ctx.createOscillator();
@@ -1445,7 +1445,7 @@
         document.getElementById('bottom-role-text').innerText = curr.role;
       }
         // Trigger the vibration exactly as the assignment hits the screen
-        navigator.vibrate([400, 200, 400, 200, 400]);
+        navigator.vibrate([100, 50, 100]);
 
       const nextBtn = document.getElementById('next-btn');
       if (currentIndex === assignments.length - 1) {
