@@ -1006,84 +1006,91 @@
     }
 
     /* --- SYNTHESIZED WEB AUDIO ENGINE --- */
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+function playSound() {
+  // Set the new default to 'radar'
+  let selectedKey = 'radar'; 
+  const selectElem = document.getElementById('soundSelect');
+  
+  if (selectElem && selectElem.value) {
+    selectedKey = selectElem.value;
+  } else {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+      if (saved) {
+        selectedKey = JSON.parse(saved).soundChoice || 'radar';
       }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
+    } catch(e) {}
+  }
 
-    function playSound() {
-      let selectedKey = 'radar';
-      const selectElem = document.getElementById('soundSelect');
-      
-      if (selectElem && selectElem.value) {
-        selectedKey = selectElem.value;
-      } else {
-        const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
-        if (saved) {
-          try { selectedKey = JSON.parse(saved).soundChoice || 'radar'; } catch(e){}
-        }
-      }
+  const ctx = getAudioContext();
+  const now = ctx.currentTime;
+  
+  // MAX VOLUME MASTER NODE
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(1.0, now); 
+  masterGain.connect(ctx.destination);
+    try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const maxVol = 1.5; // Cranked up base volume
 
-      try {
-        const ctx = getAudioContext();
-        const now = ctx.currentTime;
-        const maxVol = 1.5; // Cranked up base volume
 
-        if (selectedKey === 'radar') {
-          // iPhone Radar style
-          [0, 0.3, 0.6, 0.9, 1.2].forEach((delay, idx) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(850 - (idx * 10), now + delay);
-            
-            gain.gain.setValueAtTime(maxVol, now + delay);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.25);
 
-            osc.connect(gain);
-            gain.connect(ctx.destination);
+    if (selectedKey === 'radar') {
+    // iPhone-style Radar (Sequenced marimba/bell pings)
+    const playPing = (time, freq) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine'; // Smooth tone for a bell sound
+    osc.frequency.setValueAtTime(freq, time);
+    
+    gain.gain.setValueAtTime(1.0, time);
+    gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3); // Quick fade out
+    
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(time);
+    osc.stop(time + 0.3);
+    };
+    
+    // The recognizable radar sequence
+    playPing(now, 750);
+    playPing(now + 0.25, 750);
+    playPing(now + 0.5, 750);
+    playPing(now + 0.75, 750);
+    playPing(now + 1.0, 950); 
 
-            osc.start(now + delay);
-            osc.stop(now + delay + 0.3);
-          });
+    } else if (selectedKey === 'extreme_buzzer') {
+    // Extremely Loud Buzzer (Harsh square wave + slight distortion)
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(150, now);
+    
+    // Pitch flutter for maximum annoyance/loudness
+    osc.frequency.linearRampToValueAtTime(160, now + 0.1);
+    osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(1.0, now); // Maxed out
+    gain.gain.setValueAtTime(1.0, now + 0.8);
+    gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
+    
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(now);
+    osc.stop(now + 1.0);
 
-        } else if (selectedKey === 'loudbuzzer') {
-          // Extremely loud, abrasive multi-oscillator buzzer
-          const osc1 = ctx.createOscillator();
-          const osc2 = ctx.createOscillator();
-          const osc3 = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc1.type = 'sawtooth';
-          osc2.type = 'square';
-          osc3.type = 'sawtooth';
-          osc1.frequency.setValueAtTime(100, now);
-          osc2.frequency.setValueAtTime(115, now);
-          osc3.frequency.setValueAtTime(130, now);
-
-          gain.gain.setValueAtTime(2.0, now); // Super boosted
-          gain.gain.setValueAtTime(2.0, now + 1.0);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
-
-          osc1.connect(gain);
-          osc2.connect(gain);
-          osc3.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc1.start(now);
-          osc2.start(now);
-          osc3.start(now);
-          osc1.stop(now + 1.2);
-          osc2.stop(now + 1.2);
-          osc3.stop(now + 1.2);
-
-        } else if (selectedKey === 'buzzer') {
+    } else if (selectedKey === 'buzzer') {
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
