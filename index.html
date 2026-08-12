@@ -553,7 +553,7 @@
   <div id="splash-page" onclick="dismissSplash()">
     <div id="splash-title" class="splash-top-title">Random Robin</div>
     <div class="splash-container">
-      <img id="splash-img" src="splash.png" alt="Branding Logo" class="splash-logo">
+      <img id="splash-img" src="splash.jpg" alt="Branding Logo" class="splash-logo">
     </div>
     <div class="splash-footer-note">Tap screen to begin. <br> See help for customization options </div>
   </div>
@@ -612,6 +612,8 @@
       <div class="input-group">
         <label for="soundSelect">End Sound</label>
         <select id="soundSelect" onchange="saveSettings(); testSound();">
+          <option value="radar">Radar (iPhone Style) - Default</option>
+          <option value="loudbuzzer">Extremely Loud Buzzer</option>
           <option value="buzzer">Buzzer (Shotclock Horn)</option>
           <option value="alarm">Alarm (Siren)</option>
           <option value="beep">Beep (Double Pitch)</option>
@@ -650,6 +652,7 @@
           <li><strong>Timer (Minutes):</strong> Built-in match countdown clock with repeating audio and vibration alerts.</li>
           <li><strong>Max Courts:</strong> Set total courts available at your facility.</li>
           <li><strong>Select Courts:</strong> Check off courts open for play.</li>
+          <li><strong>Captain's Spot:</strong> The last two player assignments are permanently reserved for the Receivers on the highest numbered court.</li>
           <li>Select <strong>Do Assignments</strong> to assign players to courts.</li>
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
           <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random Robin directly to your phone for quick offline access!</li>
@@ -799,27 +802,29 @@
       const splashTitle = document.getElementById('splash-title');
       const splashImg = document.getElementById('splash-img');
 
-      // 1. Text Handling (Always works offline from LocalStorage)
+      // 1. Text Handling
       splashTitle.innerText = customText || APP_NAME;
 
-      // 2. Image Handling with Offline Fallback
+      // 2. Image Handling with Offline Fallback (.jpg first, then .png)
       splashImg.style.display = 'block';
 
       if (brandingUrl && navigator.onLine) {
         splashImg.src = brandingUrl;
       } else {
-        // Fallback to local image hosted on GitHub
-        splashImg.src = 'splash.png';
+        splashImg.src = 'splash.jpg';
       }
 
-      // Gracefully handle missing or broken images
+      // Gracefully handle missing or broken images via chain
       splashImg.onerror = function() {
-        if (this.src !== location.origin + '/splash.png') {
-          // If external URL failed, attempt to load local GitHub splash.png
+        if (this.src.includes('splash.jpg')) {
+          // If jpg fails, fallback to png
           this.src = 'splash.png';
-        } else {
-          // If no local image exists either, hide the image element smoothly
+        } else if (this.src.includes('splash.png') && !this.src.includes(brandingUrl)) {
+          // If png fails too, hide entirely
           this.style.display = 'none';
+        } else {
+          // If external URL failed, start fallback chain
+          this.src = 'splash.jpg';
         }
       };
 
@@ -872,7 +877,7 @@
         gameCount: parseInt(document.getElementById('gameCount').value, 10) || 1,
         playTime: parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME,
         maxCourts: parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS,
-        soundChoice: document.getElementById('soundSelect').value || 'buzzer',
+        soundChoice: document.getElementById('soundSelect').value || 'radar',
         customText: document.getElementById('customBrandingText').value.trim(),
         brandingUrl: document.getElementById('brandingUrl').value.trim()
       };
@@ -1013,7 +1018,7 @@
     }
 
     function playSound() {
-      let selectedKey = 'buzzer';
+      let selectedKey = 'radar';
       const selectElem = document.getElementById('soundSelect');
       
       if (selectElem && selectElem.value) {
@@ -1021,16 +1026,64 @@
       } else {
         const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
         if (saved) {
-          try { selectedKey = JSON.parse(saved).soundChoice || 'buzzer'; } catch(e){}
+          try { selectedKey = JSON.parse(saved).soundChoice || 'radar'; } catch(e){}
         }
       }
 
       try {
         const ctx = getAudioContext();
         const now = ctx.currentTime;
+        const maxVol = 1.5; // Cranked up base volume
 
-        if (selectedKey === 'buzzer') {
-          // Loud dual-sawtooth basketball shot-clock buzzer
+        if (selectedKey === 'radar') {
+          // iPhone Radar style
+          [0, 0.3, 0.6, 0.9, 1.2].forEach((delay, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(850 - (idx * 10), now + delay);
+            
+            gain.gain.setValueAtTime(maxVol, now + delay);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.25);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + delay);
+            osc.stop(now + delay + 0.3);
+          });
+
+        } else if (selectedKey === 'loudbuzzer') {
+          // Extremely loud, abrasive multi-oscillator buzzer
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const osc3 = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc1.type = 'sawtooth';
+          osc2.type = 'square';
+          osc3.type = 'sawtooth';
+          osc1.frequency.setValueAtTime(100, now);
+          osc2.frequency.setValueAtTime(115, now);
+          osc3.frequency.setValueAtTime(130, now);
+
+          gain.gain.setValueAtTime(2.0, now); // Super boosted
+          gain.gain.setValueAtTime(2.0, now + 1.0);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+
+          osc1.connect(gain);
+          osc2.connect(gain);
+          osc3.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc3.start(now);
+          osc1.stop(now + 1.2);
+          osc2.stop(now + 1.2);
+          osc3.stop(now + 1.2);
+
+        } else if (selectedKey === 'buzzer') {
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -1040,7 +1093,7 @@
           osc1.frequency.setValueAtTime(150, now);
           osc2.frequency.setValueAtTime(156, now);
 
-          gain.gain.setValueAtTime(0.9, now);
+          gain.gain.setValueAtTime(maxVol, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
 
           osc1.connect(gain);
@@ -1053,12 +1106,11 @@
           osc2.stop(now + 1.2);
 
         } else if (selectedKey === 'alarm') {
-          // Rapid alternating siren
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
 
-          gain.gain.setValueAtTime(0.8, now);
+          gain.gain.setValueAtTime(maxVol, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 1.3);
 
           for (let i = 0; i < 6; i++) {
@@ -1072,14 +1124,13 @@
           osc.stop(now + 1.3);
 
         } else if (selectedKey === 'beep') {
-          // Distinct high double-beep
           [0, 0.2].forEach(delay => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(1200, now + delay);
 
-            gain.gain.setValueAtTime(0.8, now + delay);
+            gain.gain.setValueAtTime(maxVol, now + delay);
             gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.12);
 
             osc.connect(gain);
@@ -1090,14 +1141,13 @@
           });
 
         } else if (selectedKey === 'chime') {
-          // Loud decaying chime/bell
           [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now + (idx * 0.1));
 
-            gain.gain.setValueAtTime(0.7, now + (idx * 0.1));
+            gain.gain.setValueAtTime(maxVol, now + (idx * 0.1));
             gain.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.1) + 1.0);
 
             osc.connect(gain);
@@ -1108,14 +1158,13 @@
           });
 
         } else if (selectedKey === 'success') {
-          // Ascending major chord
           [440, 554.37, 659.25, 880].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, now + (idx * 0.12));
 
-            gain.gain.setValueAtTime(0.8, now + (idx * 0.12));
+            gain.gain.setValueAtTime(maxVol, now + (idx * 0.12));
             gain.gain.exponentialRampToValueAtTime(0.01, now + (idx * 0.12) + 0.3);
 
             osc.connect(gain);
@@ -1126,7 +1175,6 @@
           });
 
         } else if (selectedKey === 'error') {
-          // Low buzzing tone
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -1136,7 +1184,7 @@
           osc1.frequency.setValueAtTime(180, now);
           osc2.frequency.setValueAtTime(127, now);
 
-          gain.gain.setValueAtTime(0.85, now);
+          gain.gain.setValueAtTime(maxVol, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
           osc1.connect(gain);
@@ -1292,28 +1340,42 @@
       assignments = [];
 
       const activeCourtsToUse = selectedCourts.slice(0, Math.floor(numPlayers / 4));
+      
+      // Find the highest numbered court in use
+      const highestCourt = Math.max(...activeCourtsToUse);
+      
+      const standardPool = [];
+      const captainPool = [];
 
       activeCourtsToUse.forEach(cNum => {
-        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
-        assignments.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
-        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
-        assignments.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+        // Everyone gets servers added to standard pool
+        standardPool.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
+        standardPool.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
+        
+        // If it's the highest court, receivers go to captain pool. Otherwise, standard pool.
+        if (cNum === highestCourt) {
+          captainPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+          captainPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+        } else {
+          standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+          standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+        }
       });
 
-      const assignedCount = assignments.length;
+      const assignedCount = standardPool.length + captainPool.length;
       const byeCount = numPlayers - assignedCount;
 
       for (let i = 0; i < byeCount; i++) {
-        assignments.push({ role: 'BYE', court: 'SIT OUT', theme: 'theme-bye' });
+        standardPool.push({ role: 'BYE', court: 'SIT OUT', theme: 'theme-bye' });
       }
 
-      // Initial Fisher-Yates Shuffle
-      for (let i = assignments.length - 1; i > 0; i--) {
+      // Initial Fisher-Yates Shuffle on standard pool ONLY
+      for (let i = standardPool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+        [standardPool[i], standardPool[j]] = [standardPool[j], standardPool[i]];
       }
 
-      // Ensure no two back-to-back matching assignments exist
+      // Ensure no two back-to-back matching assignments exist in standard pool
       const isMatch = (a, b) => a.role === b.role && a.court === b.court;
       let maxPasses = 100;
       let hasMatch = true;
@@ -1322,34 +1384,37 @@
         hasMatch = false;
         maxPasses--;
 
-        for (let i = 1; i < assignments.length; i++) {
-          if (isMatch(assignments[i], assignments[i - 1])) {
+        for (let i = 1; i < standardPool.length; i++) {
+          if (isMatch(standardPool[i], standardPool[i - 1])) {
             hasMatch = true;
             let swapped = false;
 
-            for (let j = 0; j < assignments.length; j++) {
+            for (let j = 0; j < standardPool.length; j++) {
               if (j === i || j === i - 1) continue;
 
-              const cand = assignments[j];
-              const prevJ = j > 0 ? assignments[j - 1] : null;
-              const nextJ = j < assignments.length - 1 ? assignments[j + 1] : null;
+              const cand = standardPool[j];
+              const prevJ = j > 0 ? standardPool[j - 1] : null;
+              const nextJ = j < standardPool.length - 1 ? standardPool[j + 1] : null;
 
-              if (!isMatch(cand, assignments[i - 1]) &&
-                  (!prevJ || !isMatch(assignments[i], prevJ)) &&
-                  (!nextJ || !isMatch(assignments[i], nextJ))) {
-                [assignments[i], assignments[j]] = [assignments[j], assignments[i]];
+              if (!isMatch(cand, standardPool[i - 1]) &&
+                  (!prevJ || !isMatch(standardPool[i], prevJ)) &&
+                  (!nextJ || !isMatch(standardPool[i], nextJ))) {
+                [standardPool[i], standardPool[j]] = [standardPool[j], standardPool[i]];
                 swapped = true;
                 break;
               }
             }
 
             if (!swapped) {
-              const r = Math.floor(Math.random() * assignments.length);
-              [assignments[i], assignments[r]] = [assignments[r], assignments[i]];
+              const r = Math.floor(Math.random() * standardPool.length);
+              [standardPool[i], standardPool[r]] = [standardPool[r], standardPool[i]];
             }
           }
         }
       }
+
+      // Append Captain's reserved spots to the absolute end
+      assignments = standardPool.concat(captainPool);
 
       currentIndex = 0;
       document.getElementById('setup-page').classList.add('hidden');
@@ -1538,6 +1603,7 @@
       document.getElementById('assignment-page').classList.remove('hidden');
       renderCurrentAssignment();
     }
+    
     async function resetAndUninstallApp() {
         showConfirm(
             "This will clear all saved app data, remove offline caches, and unregister the app.\n You will need to manually delete the icon \n\nDo you want to proceed?",

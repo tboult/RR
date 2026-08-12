@@ -1,4 +1,4 @@
-const CACHE_NAME = 'RR-v0.93';
+const CACHE_NAME = 'RR-v0.94';
 
 const ASSETS = [
   './',
