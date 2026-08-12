@@ -1287,7 +1287,7 @@
         if (savedStr !== null && Array.isArray(savedChecked)) {
           cb.checked = savedChecked.includes(i);
         } else {
-          cb.checked = (i <= neededCourts);
+          cb.checked = false;
         }
 
         cb.addEventListener('change', saveSettings);
