@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Random Robin</title>
+  <title>RanomRobin</title>
 
   <!-- Mobile Web App & Standalone Mode Settings for iOS & Android -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Random Robin">
+  <meta name="apple-mobile-web-app-title" content="RanomRobin">
   <meta name="theme-color" content="#0f172a">
 
   <!-- Correct Android Manifest and PNG Icons -->
@@ -551,7 +551,7 @@
 
   <!-- SPLASH PAGE -->
   <div id="splash-page" onclick="dismissSplash()">
-    <div id="splash-title" class="splash-top-title">Random Robin</div>
+    <div id="splash-title" class="splash-top-title">RanomRobin</div>
     <div class="splash-container">
       <img id="splash-img" src="splash.jpg" alt="Branding Logo" class="splash-logo">
     </div>
@@ -575,7 +575,7 @@
   <div id="setup-page" class="page hidden">
     <div class="setup-container">
       <div class="header-branding">
-        <img src="icon-192.png" alt="Random Robin Logo" class="app-logo-img" onerror="this.style.display='none'">
+        <img src="icon-192.png" alt="RanomRobin Logo" class="app-logo-img" onerror="this.style.display='none'">
         <h1 id="app-heading">
           RandomRobin <span id="app-version">Loading...</span>
         </h1>        
@@ -655,7 +655,7 @@
           <li><strong>Captain's Spot:</strong> The last two player assignments are permanently reserved for the Receivers on the highest numbered court.</li>
           <li>Select <strong>Do Assignments</strong> to assign players to courts.</li>
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
-          <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random Robin directly to your phone for quick offline access!</li>
+          <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save RanomRobin directly to your phone for quick offline access!</li>
         </ul>
 
         <!-- CUSTOM BRANDING FIELDS -->
@@ -722,7 +722,7 @@
 
   <script>
     // APP CONSTANTS & STORAGE KEYS
-    const APP_NAME = "Random Robin";
+    const APP_NAME = "RanomRobin";
     const DEFAULT_MAX_COURTS = 20;
     const DEFAULT_PLAY_TIME = 13;
 
@@ -916,7 +916,7 @@
 
     function triggerInstallPrompt() {
       if (isRunningStandalone()) {
-        showAlert("Random Robin is already installed and running from your Home Screen!", "📱 Already Installed");
+        showAlert("RanomRobin is already installed and running from your Home Screen!", "📱 Already Installed");
         return;
       }
 
@@ -924,7 +924,7 @@
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            showAlert("Random Robin has been added to your Home Screen!", "📱 Success");
+            showAlert("RanomRobin has been added to your Home Screen!", "📱 Success");
           }
           deferredPrompt = null;
         });
@@ -932,11 +932,11 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         if (isIOS) {
           showAlert(
-            "To save Random Robin to your iPhone/iPad Home Screen:\n\n1. Tap the Share button ⎋ at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen ➕'",
+            "To save RanomRobin to your iPhone/iPad Home Screen:\n\n1. Tap the Share button ⎋ at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen ➕'",
             "📱 Save to Home Screen (iOS)"
           );
         } else {
-          showAlert("To save Random Robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'"
+          showAlert("To save RanomRobin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'"
           ); 
         }
       }
@@ -1029,12 +1029,11 @@
           try { selectedKey = JSON.parse(saved).soundChoice || 'buzzer'; } catch(e){}
         }
       }
-      const maxVol = 1.5; // Cranked up base volume
+      const maxVol = 10; // Cranked up base volume
       try {
         const ctx = getAudioContext();
         const now = ctx.currentTime;
 
-    masterGain=1.5
     if (selectedKey === 'radar') {
     // iPhone-style Radar (Sequenced marimba/bell pings)
         const playPing = (time, freq) => {
@@ -1047,7 +1046,7 @@
             gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3); // Quick fade out
             
             osc.connect(gain);
-            gain.connect(masterGain);
+            gain.connect(ctx.destination); 
             osc.start(time);
             osc.stop(time + 0.3);
         };
@@ -1071,11 +1070,11 @@
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(1.0, now); // Maxed out
-        gain.gain.setValueAtTime(1.0, now + 0.8);
+        gain.gain.setValueAtTime(maxVol, now + 0.8);
         gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
     
         osc.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(ctx.destination); 
         osc.start(now);
         osc.stop(now + 1.0);
 
@@ -1637,12 +1636,12 @@
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 if (isIOS) {
                     showAlert(
-                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random Robin icon on your Home Screen.\n2. Tap 'Remove App' ➔ 'Delete App'.",
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the RanomRobin icon on your Home Screen.\n2. Tap 'Remove App' ➔ 'Delete App'.",
                         "App Data Cleared"
                     );
                 } else {
                     showAlert(
-                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random Robin icon on your app drawer/home screen.\n2. Tap 'Uninstall' or drag to the top bin.",
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the RanomRobin icon on your app drawer/home screen.\n2. Tap 'Uninstall' or drag to the top bin.",
                         "App Data Cleared"
                     );
                 }
