@@ -553,7 +553,7 @@
   <div id="splash-page" onclick="dismissSplash()">
     <div id="splash-title" class="splash-top-title">Random Robin</div>
     <div class="splash-container">
-      <img id="splash-img" src="splash.jpg" alt="Branding Logo" class="splash-logo">
+      <img id="splash-img" src="splash.png" alt="Branding Logo" class="splash-logo">
     </div>
     <div class="splash-footer-note">Tap screen to begin. <br> See help for customization options </div>
   </div>
@@ -809,14 +809,14 @@
         splashImg.src = brandingUrl;
       } else {
         // Fallback to local image hosted on GitHub
-        splashImg.src = 'splash.jpg';
+        splashImg.src = 'splash.png';
       }
 
       // Gracefully handle missing or broken images
       splashImg.onerror = function() {
-        if (this.src !== location.origin + '/splash.jpg') {
+        if (this.src !== location.origin + '/splash.png') {
           // If external URL failed, attempt to load local GitHub splash.png
-          this.src = 'splash.jpg';
+          this.src = 'splash.png';
         } else {
           // If no local image exists either, hide the image element smoothly
           this.style.display = 'none';
@@ -1379,8 +1379,6 @@
         document.getElementById('court-text').innerText = curr.court;
         document.getElementById('bottom-role-text').innerText = curr.role;
       }
-
-        navigator.vibrate([250, 100]);        
 
       const nextBtn = document.getElementById('next-btn');
       if (currentIndex === assignments.length - 1) {
