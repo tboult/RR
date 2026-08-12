@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Random robin</title>
+  <title>Random RobiN</title>
 
   <!-- Mobile Web App & Standalone Mode Settings for iOS & Android -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Random robin">
+  <meta name="apple-mobile-web-app-title" content="Random RobiN">
   <meta name="theme-color" content="#0f172a">
 
   <!-- Correct Android Manifest and PNG Icons -->
@@ -551,7 +551,7 @@
 
   <!-- SPLASH PAGE -->
   <div id="splash-page" onclick="dismissSplash()">
-    <div id="splash-title" class="splash-top-title">Random robin</div>
+    <div id="splash-title" class="splash-top-title">Random RobiN</div>
     <div class="splash-container">
       <img id="splash-img" src="splash.jpg" alt="Branding Logo" class="splash-logo">
     </div>
@@ -575,9 +575,9 @@
   <div id="setup-page" class="page hidden">
     <div class="setup-container">
       <div class="header-branding">
-        <img src="icon-192.png" alt="Random robin Logo" class="app-logo-img" onerror="this.style.display='none'">
+        <img src="icon-192.png" alt="Random Robin Logo" class="app-logo-img" onerror="this.style.display='none'">
         <h1 id="app-heading">
-          RandomRobin Test<span id="app-version">Loading...</span>
+          RandomRobin <span id="app-version">Loading...</span>
         </h1>        
       </div>
       
@@ -655,7 +655,7 @@
           <li><strong>Captain's Spot:</strong> The last two player assignments are permanently reserved for the Receivers on the highest numbered court.</li>
           <li>Select <strong>Do Assignments</strong> to assign players to courts.</li>
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
-          <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random robin directly to your phone for quick offline access!</li>
+          <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save Random RobiN directly to your phone for quick offline access!</li>
         </ul>
 
         <!-- CUSTOM BRANDING FIELDS -->
@@ -722,7 +722,7 @@
 
   <script>
     // APP CONSTANTS & STORAGE KEYS
-    const APP_NAME = "Random robin";
+    const APP_NAME = "Random RobiN";
     const DEFAULT_MAX_COURTS = 20;
     const DEFAULT_PLAY_TIME = 13;
 
@@ -877,7 +877,7 @@
         gameCount: parseInt(document.getElementById('gameCount').value, 10) || 1,
         playTime: parseInt(document.getElementById('playTime').value, 10) || DEFAULT_PLAY_TIME,
         maxCourts: parseInt(document.getElementById('maxCourts').value, 10) || DEFAULT_MAX_COURTS,
-        soundChoice: document.getElementById('soundSelect').value || 'radar',
+        soundChoice: document.getElementById('soundSelect').value || 'buzzer',
         customText: document.getElementById('customBrandingText').value.trim(),
         brandingUrl: document.getElementById('brandingUrl').value.trim()
       };
@@ -916,7 +916,7 @@
 
     function triggerInstallPrompt() {
       if (isRunningStandalone()) {
-        showAlert("Random robin is already installed and running from your Home Screen!", "📱 Already Installed");
+        showAlert("Random RobiN is already installed and running from your Home Screen!", "📱 Already Installed");
         return;
       }
 
@@ -924,7 +924,7 @@
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
           if (choiceResult.outcome === 'accepted') {
-            showAlert("Random robin has been added to your Home Screen!", "📱 Success");
+            showAlert("Random RobiN has been added to your Home Screen!", "📱 Success");
           }
           deferredPrompt = null;
         });
@@ -932,11 +932,11 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         if (isIOS) {
           showAlert(
-            "To save Random robin to your iPhone/iPad Home Screen:\n\n1. Tap the Share button ⎋ at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen ➕'",
+            "To save Random RobiN to your iPhone/iPad Home Screen:\n\n1. Tap the Share button ⎋ at the bottom of Safari\n2. Scroll down and tap 'Add to Home Screen ➕'",
             "📱 Save to Home Screen (iOS)"
           );
         } else {
-          showAlert("To save Random robin to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'"
+          showAlert("To save Random RobiN to your Android Home Screen:\n\n1. Tap your browser menu (⋮ 3 dots at top right)\n2. Tap 'Add to Home screen' or 'Install app'"
           ); 
         }
       }
@@ -1006,44 +1006,33 @@
     }
 
     /* --- SYNTHESIZED WEB AUDIO ENGINE --- */
-function getAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
-
-function playSound() {
-  // Set the new default to 'radar'
-  let selectedKey = 'radar'; 
-  const selectElem = document.getElementById('soundSelect');
-  
-  if (selectElem && selectElem.value) {
-    selectedKey = selectElem.value;
-  } else {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
-      if (saved) {
-        selectedKey = JSON.parse(saved).soundChoice || 'radar';
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
       }
-    } catch(e) {}
-  }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
 
-  const ctx = getAudioContext();
-  const now = ctx.currentTime;
-  
-  // MAX VOLUME MASTER NODE
-  const masterGain = ctx.createGain();
-  masterGain.gain.setValueAtTime(1.0, now); 
-  masterGain.connect(ctx.destination);
-    try {
-    const ctx = getAudioContext();
-    const now = ctx.currentTime;
-    const maxVol = 1.5; // Cranked up base volume
-
+    function playSound() {
+      let selectedKey = 'buzzer';
+      const selectElem = document.getElementById('soundSelect');
+      
+      if (selectElem && selectElem.value) {
+        selectedKey = selectElem.value;
+      } else {
+        const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (saved) {
+          try { selectedKey = JSON.parse(saved).soundChoice || 'buzzer'; } catch(e){}
+        }
+      }
+      const maxVol = 1.5; // Cranked up base volume
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
 
 
     if (selectedKey === 'radar') {
@@ -1113,6 +1102,7 @@ function playSound() {
           osc2.stop(now + 1.2);
 
         } else if (selectedKey === 'alarm') {
+          // Rapid alternating siren
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
@@ -1148,6 +1138,7 @@ function playSound() {
           });
 
         } else if (selectedKey === 'chime') {
+          // Loud decaying chime/bell
           [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -1165,6 +1156,7 @@ function playSound() {
           });
 
         } else if (selectedKey === 'success') {
+          // Ascending major chord
           [440, 554.37, 659.25, 880].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -1182,6 +1174,7 @@ function playSound() {
           });
 
         } else if (selectedKey === 'error') {
+          // Low buzzing tone
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -1451,6 +1444,8 @@ function playSound() {
         document.getElementById('court-text').innerText = curr.court;
         document.getElementById('bottom-role-text').innerText = curr.role;
       }
+        // Trigger the vibration exactly as the assignment hits the screen
+        navigator.vibrate([400, 200, 400, 200, 400]);
 
       const nextBtn = document.getElementById('next-btn');
       if (currentIndex === assignments.length - 1) {
@@ -1642,12 +1637,12 @@ function playSound() {
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 if (isIOS) {
                     showAlert(
-                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random robin icon on your Home Screen.\n2. Tap 'Remove App' ➔ 'Delete App'.",
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random RobiN icon on your Home Screen.\n2. Tap 'Remove App' ➔ 'Delete App'.",
                         "App Data Cleared"
                     );
                 } else {
                     showAlert(
-                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random robin icon on your app drawer/home screen.\n2. Tap 'Uninstall' or drag to the top bin.",
+                        "All local data and caches have been cleared!\n\nTo remove the app icon from your device:\n1. Touch and hold the Random RobiN icon on your app drawer/home screen.\n2. Tap 'Uninstall' or drag to the top bin.",
                         "App Data Cleared"
                     );
                 }
