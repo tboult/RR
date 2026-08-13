@@ -577,7 +577,7 @@
       <div class="header-branding">
         <img src="icon-192.png" alt="RanomRobin Logo" class="app-logo-img" onerror="this.style.display='none'">
         <h1 id="app-heading">
-          RandomRobin <span id="app-version">Loading...</span>
+          Random Robin<span id="app-version">Loading...</span>
         </h1>        
       </div>
       
@@ -612,7 +612,7 @@
       <div class="input-group">
         <label for="soundSelect">End Sound</label>
         <select id="soundSelect" onchange="saveSettings(); testSound();">
-          <option value="radar">Radar (iPhone Style) - Default</option>
+          <option value="radar">Radar Pinging</option>
           <option value="loudbuzzer">Extremely Loud Buzzer</option>
           <option value="buzzer">Buzzer (Shotclock Horn)</option>
           <option value="alarm">Alarm (Siren)</option>
@@ -1058,7 +1058,7 @@
         playPing(now + 0.75, 750);
         playPing(now + 1.0, 950); 
         
-    } else if (selectedKey === 'extreme_buzzer') {
+    } else if (selectedKey === 'loudbuzzer') {
         // Extremely Loud Buzzer (Harsh square wave + slight distortion)
         const osc = ctx.createOscillator();
         osc.type = 'square';
@@ -1180,20 +1180,24 @@
 
           osc1.type = 'sawtooth';
           osc2.type = 'sawtooth';
+          osc3.type = 'sawtooth';            
           osc1.frequency.setValueAtTime(180, now);
           osc2.frequency.setValueAtTime(127, now);
+          osc2.frequency.setValueAtTime(67, now);            
 
-          gain.gain.setValueAtTime(maxVol, now);
+          gain.gain.setValueAtTime(4, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
           osc1.connect(gain);
           osc2.connect(gain);
+          osc3.connect(gain);            
           gain.connect(ctx.destination);
-
           osc1.start(now);
           osc2.start(now);
+          osc3.start(now);            
           osc1.stop(now + 0.8);
           osc2.stop(now + 0.8);
+          osc3.stop(now + 0.7);            
         }
       } catch (err) {
         console.error("Synthesizer Audio error:", err);
