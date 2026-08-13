@@ -1035,6 +1035,7 @@
         const now = ctx.currentTime;
 
     if (selectedKey === 'radar') {
+
     // iPhone-style Radar (Sequenced marimba/bell pings)
         const playPing = (time, freq) => {
             const osc = ctx.createOscillator();
@@ -1053,9 +1054,11 @@
     
         // The recognizable radar sequence
         playPing(now, 750);
-        playPing(now + 0.25, 750);
-        playPing(now + 0.5, 750);
-        playPing(now + 0.75, 750);
+        playPing(now + 0.1, 979);        
+        playPing(now + 0.2, 750);
+        playPing(now + 0.52, 979);        
+        playPing(now + 0.57, 750)
+        playPing(now + 0.9, 750);
         playPing(now + 1.0, 950); 
         
     } else if (selectedKey === 'loudbuzzer') {
@@ -1176,6 +1179,7 @@
           // Low buzzing tone
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
+          const osc3 = ctx.createOscillator();            
           const gain = ctx.createGain();
 
           osc1.type = 'sawtooth';
@@ -1183,9 +1187,9 @@
           osc3.type = 'sawtooth';            
           osc1.frequency.setValueAtTime(180, now);
           osc2.frequency.setValueAtTime(127, now);
-          osc2.frequency.setValueAtTime(67, now);            
+          osc3.frequency.setValueAtTime(67, now);            
 
-          gain.gain.setValueAtTime(4, now);
+          gain.gain.setValueAtTime(maxVol, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
           osc1.connect(gain);
