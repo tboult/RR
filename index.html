@@ -652,7 +652,6 @@
           <li><strong>Timer (Minutes):</strong> Built-in match countdown clock with repeating audio and vibration alerts.</li>
           <li><strong>Max Courts:</strong> Set total courts available at your facility.</li>
           <li><strong>Select Courts:</strong> Check off courts open for play.</li>
-          <li><strong>Captain's Spot:</strong> The last two player assignments are permanently reserved for the Receivers on the highest numbered court.</li>
           <li>Select <strong>Do Assignments</strong> to assign players to courts.</li>
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
           <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save RanomRobin directly to your phone for quick offline access!</li>
@@ -847,6 +846,30 @@
         }, 500);
       }
     }
+
+    function playClick() {
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        // High frequency, very short duration for a "click/tap" feel
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(800, now);
+        
+        gain.gain.setValueAtTime(0.5, now); // Not too loud
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); // Super fast fade out
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } catch (err) {
+        // Ignore if audio context isn't ready
+      }
+    }    
 
     window.onload = function() {
       document.title = APP_NAME;
@@ -1352,24 +1375,17 @@
       const highestCourt = Math.max(...activeCourtsToUse);
       
       const standardPool = [];
-      const captainPool = [];
 
       activeCourtsToUse.forEach(cNum => {
-        // Everyone gets servers added to standard pool
+        // Everyone gets added to standard pool
         standardPool.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
         standardPool.push({ role: 'SERVER', court: cNum, theme: 'theme-silver' });
-        
-        // If it's the highest court, receivers go to captain pool. Otherwise, standard pool.
-        if (cNum === highestCourt) {
-          captainPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
-          captainPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
-        } else {
-          standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
-          standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
-        }
+        standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
+        standardPool.push({ role: 'RECEIVER', court: cNum, theme: 'theme-red' });
       });
 
-      const assignedCount = standardPool.length + captainPool.length;
+      const assignedCount = standardPool.length;
+
       const byeCount = numPlayers - assignedCount;
 
       for (let i = 0; i < byeCount; i++) {
@@ -1453,6 +1469,7 @@
       }
         // Trigger the vibration exactly as the assignment hits the screen
         navigator.vibrate([100, 50, 100]);
+        playClick(); // Plays the iOS/Android audio click        
 
       const nextBtn = document.getElementById('next-btn');
       if (currentIndex === assignments.length - 1) {
