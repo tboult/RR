@@ -1057,48 +1057,65 @@
         const ctx = getAudioContext();
         const now = ctx.currentTime;
 
+
+
 if (selectedKey === 'radar') {
-        // iPhone-style Radar (Overlapping Sine Waves)
-        const duration = 0.15;
-        const freq1 = 1760; // A6
-        const freq2 = 1567; // G6
+          // 1. Create a compressor to slam the volume and prevent natural clipping roll-off
+          const compressor = ctx.createDynamicsCompressor();
+          compressor.threshold.value = -50;
+          compressor.knee.value = 0;
+          compressor.ratio.value = 20;
+          compressor.attack.value = 0;
+          compressor.release.value = 0.1;
+          compressor.connect(ctx.destination);
 
-        // First tone (higher pitch)
-        const osc1 = ctx.createOscillator();
-        const gain1 = ctx.createGain();
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(freq1, now);
-        
-        // Note: Boosted the volume slightly from 0.3 to 1.0 so it cuts through as an alarm
-        gain1.gain.setValueAtTime(1.0, now); 
-        gain1.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-        osc1.connect(gain1);
-        gain1.connect(ctx.destination);
-        
-        osc1.start(now);
-        osc1.stop(now + duration);
+         // 2. Crank the master gain to extreme overdrive for MAXIMUM volume
+          const masterGain = ctx.createGain();
+          masterGain.gain.value = 10.0; // Pushed to the absolute limit 
+          masterGain.connect(compressor);
 
-        // Second tone (slightly lower pitch, right after the first)
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(freq2, now + 0.1);
-        
-        gain2.gain.setValueAtTime(1.0, now + 0.1);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1 + duration);
+          // 3. Timing variables (in seconds)
+          const beepLength = 0.12; 
+          const gap = 0.15;        // 150ms between rapid beeps
 
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        
-        osc2.start(now + 0.1);
-        osc2.stop(now + 0.1 + duration);
-        osc2.start(now + 0.3);
-        osc2.stop(now + 0.1 + duration);
-        osc2.start(now + 0.5);
-        osc2.stop(now + 0.1 + duration);
-        osc2.start(now + 0.7);
-        osc2.stop(now + 0.1 + duration);
+          const playBeep = (time) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'square'; 
+            osc.frequency.value = 2750; 
+
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(1, time + 0.005); 
+            gain.gain.exponentialRampToValueAtTime(0.01, time + beepLength); 
+
+            osc.connect(gain);
+            gain.connect(masterGain);
+
+            osc.start(time);
+            osc.stop(time + beepLength);
+          };
+
+          // 3 bursts spaced exactly 0.5 seconds apart to perfectly fill the 1.5s loop!
+          
+          // Burst 1 (Starts immediately)
+          playBeep(now);
+          playBeep(now + gap);
+          playBeep(now + gap * 2);
+
+          // Burst 2 (Starts at 0.5s)
+          const mid1 = 0.5;
+          playBeep(now + mid1);
+          playBeep(now + mid1 + gap);
+          playBeep(now + mid1 + gap * 2);
+
+          // Burst 3 (Starts at 1.0s)
+          const mid2 = 1.0;
+          playBeep(now + mid2);
+          playBeep(now + mid2 + gap);
+          playBeep(now + mid2 + gap * 2);          
+      // Note: The app's triggerAlarm() already repeats this every 1.5 seconds!
         
     } else if (selectedKey === 'loudbuzzer') {
         // Extremely Loud Buzzer (Harsh square wave + slight distortion)
