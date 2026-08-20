@@ -1057,32 +1057,42 @@
         const ctx = getAudioContext();
         const now = ctx.currentTime;
 
-    if (selectedKey === 'radar') {
+if (selectedKey === 'radar') {
+        // iPhone-style Radar (Overlapping Sine Waves)
+        const duration = 0.15;
+        const freq1 = 1760; // A6
+        const freq2 = 1567; // G6
 
-    // iPhone-style Radar (Sequenced marimba/bell pings)
-        const playPing = (time, freq) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine'; // Smooth tone for a bell sound
-            osc.frequency.setValueAtTime(freq, time);
-    
-            gain.gain.setValueAtTime(1.0, time);
-            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.3); // Quick fade out
-            
-            osc.connect(gain);
-            gain.connect(ctx.destination); 
-            osc.start(time);
-            osc.stop(time + 0.3);
-        };
-    
-        // The recognizable radar sequence
-        playPing(now, 750);
-        playPing(now + 0.1, 979);        
-        playPing(now + 0.2, 750);
-        playPing(now + 0.52, 979);        
-        playPing(now + 0.57, 750)
-        playPing(now + 0.9, 750);
-        playPing(now + 1.0, 950); 
+        // First tone (higher pitch)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(freq1, now);
+        
+        // Note: Boosted the volume slightly from 0.3 to 1.0 so it cuts through as an alarm
+        gain1.gain.setValueAtTime(1.0, now); 
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        
+        osc1.start(now);
+        osc1.stop(now + duration);
+
+        // Second tone (slightly lower pitch, right after the first)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(freq2, now + 0.1);
+        
+        gain2.gain.setValueAtTime(1.0, now + 0.1);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1 + duration);
+
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        
+        osc2.start(now + 0.1);
+        osc2.stop(now + 0.1 + duration);
         
     } else if (selectedKey === 'loudbuzzer') {
         // Extremely Loud Buzzer (Harsh square wave + slight distortion)
