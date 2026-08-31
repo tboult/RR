@@ -611,10 +611,15 @@ function renderAdminPlayerStatus(players) {
     let div = document.createElement('div');
     div.className = "player-row " + (p.status === "ACTIVE" ? "checked" : "");
     
+    // Set colors based on status
+    let isActive = (p.status === "ACTIVE");
+    let uiColor = isActive ? '#00c853' : '#9e9e9e'; // Bright Green : Gray
+    let uiWeight = isActive ? 'bold' : 'normal';
+    
     // Using standard quotes and + instead of backticks to prevent GAS syntax errors
-    div.innerHTML = '<span class="player-name">' + p.name + '</span>' +
+    div.innerHTML = '<span class="player-name" style="color: ' + uiColor + '; font-weight: ' + uiWeight + ';">' + p.name + '</span>' +
                     '<button class="btn-sub" ' +
-                    'style="min-width:auto; min-height:auto; padding:0.4rem 0.75rem; margin:0;" ' +
+                    'style="min-width:auto; min-height:auto; padding:0.4rem 0.75rem; margin:0; background-color: ' + uiColor + '; border: none; color: white;" ' +
                     'onclick="toggleAdminStatus(\\'' + p.phone + '\\', this)">' + 
                     p.status + 
                     '</button>';
@@ -628,14 +633,29 @@ function toggleAdminStatus(phone, buttonElement) {
   google.script.run
     .withSuccessHandler(newStatus => {
       buttonElement.innerText = newStatus;
+      
+      // Grab the span containing the player's name to update its color too
+      const nameSpan = buttonElement.parentElement.querySelector('.player-name');
+      
       if(newStatus === "ACTIVE") {
         buttonElement.parentElement.classList.add('checked');
+        buttonElement.style.backgroundColor = '#00c853'; // Bright Green
+        if (nameSpan) {
+          nameSpan.style.color = '#00c853';
+          nameSpan.style.fontWeight = 'bold';
+        }
       } else {
         buttonElement.parentElement.classList.remove('checked');
+        buttonElement.style.backgroundColor = '#9e9e9e'; // Gray
+        if (nameSpan) {
+          nameSpan.style.color = '#9e9e9e';
+          nameSpan.style.fontWeight = 'normal';
+        }
       }
     })
     .togglePlayerStatus(phone);
 }
+
 
 function submitAdminRegistration() {
   let data = {
