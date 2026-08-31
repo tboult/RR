@@ -7,7 +7,7 @@ const MAX_POINTS_PER_WEEK = 45;
 
 // Increment this string whenever you release an update
 function getAppVersion() {
-  return "1.0.1"; 
+  return "1.0.3"; 
 }
 
 
@@ -46,7 +46,7 @@ function doGet(e) {
 
 function showCheckInDialog() {
   const html = getCheckInHtmlOutput().setWidth(450).setHeight(680);
-  SpreadsheetApp.getUi().showModalDialog(html, '🥒 SCPB Ladder 🥒M');
+  SpreadsheetApp.getUi().showModalDialog(html, '🥒 SCPB Ladder 🥒');
 }
 
 function showAddPlayerDialog() {
@@ -83,8 +83,12 @@ function getCheckInHtmlOutput() {
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="Pickleball Ladder">
-        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iI2ZhY2MxNSIgLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjY2E4YTA0IiAvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMjUiIHI9IjQiIGZpbGw9IiNjYThhMDQiIC8+PGNpcmNsZSBjeD0iNzAiIGN5PSIzMCIgcj0iNCIgZmlsbD0iI2NhOGEwNCIgLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjUwIiByPSI0IiBmaWxsPSIjY2E4YTA0IiAvPjxjaXJjbGUgY3g9IjcwIiBjeT0iNTAiIHI9IjQiIGZpbGw9IiNjYThhMDQiIC8+PHJlY3QgeD0iMzUiIHk9IjEwIiB3aWR0aD0iNiIgaGVpZ2h0PSI4MCIgZmlsbD0iIzMzMyIgLz48cmVjdCB4PSI1OSIgeT0iMTAiIHdpZHRoPSI2IiBoZWlnaHQ9IjgwIiBmaWxsPSIjMzMzIiAvPjxyZWN0IHg9IjM1IiB5PSIyNSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjYiIGZpbGw9IiMzMzMiIC8+PHJlY3QgeD0iMzUiIHk9IjQ1IiB3aWR0aD0iMzAiIGhlaWdodD0iNiIgZmlsbD0iIzMzMyIgLz48cmVjdCB4PSIzNSIgeT0iNjUiIHdpZHRoPSIzMCIgaGVpZ2h0PSI2IiBmaWxsPSIjMzMzIiAvPjwvc3ZnPg==">
-        <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0NSIgZmlsbD0iI2ZhY2MxNSIgLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI0IiBmaWxsPSIjY2E4YTA0IiAvPjxjaXJjbGUgY3g9IjUwIiBjeT0iMjUiIHI9IjQiIGZpbGw9IiNjYThhMDQiIC8+PGNpcmNsZSBjeD0iNzAiIGN5PSIzMCIgcj0iNCIgZmlsbD0iI2NhOGEwNCIgLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjUwIiByPSI0IiBmaWxsPSIjY2E4YTA0IiAvPjxjaXJjbGUgY3g9IjcwIiBjeT0iNTAiIHI9IjQiIGZpbGw9IiNjYThhMDQiIC8+PHJlY3QgeD0iMzUiIHk9IjEwIiB3aWR0aD0iNiIgaGVpZ2h0PSI4MCIgZmlsbD0iIzMzMyIgLz48cmVjdCB4PSI1OSIgeT0iMTAiIHdpZHRoPSI2IiBoZWlnaHQ9IjgwIiBmaWxsPSIjMzMzIiAvPjxyZWN0IHg9IjM1IiB5PSIyNSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjYiIGZpbGw9IiMzMzMiIC8+PHJlY3QgeD0iMzUiIHk9IjQ1IiB3aWR0aD0iMzAiIGhlaWdodD0iNiIgZmlsbD0iIzMzMyIgLz48cmVjdCB4PSIzNSIgeT0iNjUiIHdpZHRoPSIzMCIgaGVpZ2h0PSI2IiBmaWxsPSIjMzMzIiAvPjwvc3ZnPg==">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SunCity Pickleball Ladder</title>
+  <link rel="apple-touch-icon" href="https://github.com/tboult/RR/blob/main/SunLadder.png">
+  <!-- Android / Standard Browser Icon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="https://github.com/tboult/RR/blob/main/SunLadder.png">
+</head>
 
         <style>
           /* 1. CSS VARIABLES FOR THEMES */
@@ -161,8 +165,9 @@ function getCheckInHtmlOutput() {
              font-size: 1.25rem; 
              margin: 0 0 0.75rem 0; 
              padding: 0.75rem; 
-             background: var(--header-bg); 
-             color: var(--header-text); 
+             background-color: #e8f5e9; /* Very light green */
+            color: #1b5e20;            /* Dark green text for readability */
+             border: 1px solid #a5d6a7;  /* Subtle light green border */
              border-radius: 0.5rem; 
              user-select: none;
              -webkit-user-select: none;   /* Fixes text selection on mobile Chrome/Safari */
@@ -223,8 +228,29 @@ function getCheckInHtmlOutput() {
             outline: 3px solid var(--focus-ring);
             outline-offset: 2px;
           }
+          button, .btn, .btn-main{
+  background-color: #e8f5e9; /* Very light green */
+  color: #1b5e20;            /* Dark green text for readability */
+  border: 1px solid #a5d6a7;  /* Subtle light green border */
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
-          .btn-main { background-color: var(--btn-main-bg); color: var(--btn-main-text); font-weight: bold; border: none; cursor: pointer; margin-top: 0.75rem; display: inline-block; text-align: center; text-decoration: none; }
+/* Hover state (slightly deeper light green) */
+button:hover, .btn:hover , .btn-main{ {
+  background-color: #c8e6c9; 
+  color: #0d3b0e;
+}
+
+/* Active / Pressed state */
+button:active, .btn:active {
+  background-color: #a5d6a7;
+}
+
+          //.btn-main { background-color: var(--btn-main-bg); color: var(--btn-main-text); font-weight: bold; border: none; cursor: pointer; margin-top: 0.75rem; display: inline-block; ////text-align: center; text-decoration: none; }
           .btn-sub { background-color: var(--btn-sub-bg); color: var(--btn-sub-text); font-weight: bold; border: none; cursor: pointer; }
           .btn-danger { background-color: var(--btn-danger-bg); color: var(--btn-danger-text); font-weight: bold; border: none; cursor: pointer; }
           
@@ -244,7 +270,7 @@ function getCheckInHtmlOutput() {
           .score-grid input { text-align: center; margin-top: 0; padding: 0.5rem; font-size: 1.1rem; min-height: 54px; }
           
           .status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.9rem; font-weight: bold; }
-          .status-active { background-color: var(--row-checked-bg); color: var(--text-color); border: 1px solid var(--text-color); }
+          .status-active { background-color: var(--row-checked-bg); color: ar(--text-color); border: 1px solid var(--text-color); }
           .status-inactive { background-color: #fff3bf; color: #856404; }
           .status-msg { margin-top: 0.75rem; text-align: center; font-size: 1rem; font-weight: 600; }
           
@@ -259,21 +285,21 @@ function getCheckInHtmlOutput() {
       </head>
       <body>
 
-      <h2 class="header-title" id="mainHeader" onpointerdown="handleSecretTap(event)">🎾 SCPB Ladder</h2>
+      <h2 class="header-title" id="mainHeader" onpointerdown="handleSecretTap(event)">🥒 SCPB Ladder 🥒</h2>
 
         <div class="nav">
           <button id="tab1Btn" class="active" onclick="switchTab('checkin')">Check-In</button>
-          <button id="tab2Btn" onclick="switchTab('phone')">Scores</button>
-          <button id="tab3Btn" onclick="switchTab('ranksched')">Sched/Ranks</button>
+          <button id="tab2Btn" onclick="switchTab('phone')">Enter Scores</button>
+          <button id="tab3Btn" onclick="switchTab('ranksched')">Schedule<br> & Ranks</button>
           <button id="tab4Btn" onclick="switchTab('help')">Help</button>
           <button id="tabAdminBtn" style="display:none; background:var(--btn-danger-bg); color:var(--btn-danger-text);" onclick="switchTab('admin')">Admin</button>
         </div>
 
         <!-- TAB 1: CHECK-IN SYSTEM -->
         <div id="checkinTab" class="tab-content active">
-          <label><b>Select Ladder:</b></label>
-          <select id="sheetSelect" onchange="loadCheckInPlayers()"><option value="">-- Choose Schedule --</option></select>
-          <div id="playerList"><i>Select a schedule above...</i></div>
+          <label><b>Select Group:</b></label>
+          <select id="sheetSelect" onchange="loadCheckInPlayers()"><option value="">-- Choose Ladder --</option></select>
+          <div id="playerList"><i>Select a group above...</i></div>
           <button id="saveCheckInBtn" class="btn-main" onclick="submitCheckIns()" disabled>Save Check-Ins</button>
           <div id="checkInStatus" class="status-msg"></div>
         </div>
@@ -350,6 +376,13 @@ function getCheckInHtmlOutput() {
             <ol style="margin-top:0.25rem; font-size:1rem;">
               <li>Tap the <b>3 dots</b> (menu) in the top right.</li>
               <li>Tap <b>Add to Home screen</b>.</li>
+<div class="help-section" style="margin-top: 20px; text-align: center;">
+  <p style="font-size: 0.9em; color: #666;">Not seeing recent app updates or icons?</p>
+  <button onclick="forceResetApp()" style="background-color: #d9534f; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+    🔄 Reset & Hard Refresh App
+
+  </button>
+</div>
             </ol>
           </div>
         </div>
@@ -378,7 +411,7 @@ function getCheckInHtmlOutput() {
         </div>
 
         <script>
-        const CURRENT_APP_VERSION = "1.0.1"; // Match the version in Code.gs
+        const CURRENT_APP_VERSION = "1.0.3"; // Match the version in Code.gs
 
          function checkAppVersion() {
             google.script.run.withSuccessHandler(serverVersion => {
@@ -392,6 +425,35 @@ function getCheckInHtmlOutput() {
       window.location.reload(true);
     }
   }).getAppVersion();
+}
+async function forceResetApp() {
+  if (confirm("This will clear cached app data and force-download the latest version. Continue?")) {
+    
+    // 1. Clear stored browser data
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 2. Unregister any service workers if present
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      for (let registration of registrations) {
+        await registration.unregister();
+      }
+    }
+
+    // 3. Clear Cache API storage
+    if ('caches' in window) {
+      const cacheNames = await caches.keys();
+      for (let name of cacheNames) {
+        await caches.delete(name);
+      }
+    }
+
+    // 4. Reload page with a cache-busting query parameter
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('reset_ts', Date.now());
+    window.location.href = currentUrl.toString();
+  }
 }
 
 // Add this to your existing window.onload function:
@@ -488,8 +550,8 @@ window.addEventListener('visibilitychange', () => {
           function populateSheets(sheets) {
             const sel1 = document.getElementById('sheetSelect');
             const sel2 = document.getElementById('adminSchedSelect');
-            sel1.innerHTML = '<option value="">-- Choose Schedule --</option>';
-            sel2.innerHTML = '<option value="">-- Choose Schedule --</option>';
+            sel1.innerHTML = '<option value="">-- Choose Group --</option>';
+            sel2.innerHTML = '<option value="">-- Choose Group --</option>';
             sheets.forEach(s => {
               sel1.innerHTML += \`<option value="\${s}">\${s}</option>\`;
               sel2.innerHTML += \`<option value="\${s}">\${s}</option>\`;
@@ -722,7 +784,7 @@ window.addEventListener('visibilitychange', () => {
       </body>
     </html>
   `;
-  return HtmlService.createHtmlOutput(htmlContent).setTitle('🎾 SCPB Ladder').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  return HtmlService.createHtmlOutput(htmlContent).setTitle('🥒 SCPB Ladder 🥒').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function getAddPlayerHtmlOutput() {
@@ -1578,4 +1640,3 @@ function getRankingsAndSchedData(groupName) {
   }
   return { sched: schedList, rankings: rankingList, weekNum: currentWeek };
 }
-
