@@ -83,12 +83,9 @@ function getCheckInHtmlOutput() {
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="Pickleball Ladder">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SunCity Pickleball Ladder</title>
-  <link rel="apple-touch-icon" href="https://github.com/tboult/RR/blob/main/SunLadder.png">
-  <!-- Android / Standard Browser Icon -->
-  <link rel="icon" type="image/png" sizes="192x192" href="https://github.com/tboult/RR/blob/main/SunLadder.png">
-</head>
+        <title>SunCity Pickleball Ladder</title>
+        <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/tboult/RR/refs/heads/main/SunLadder.png">
+        <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/tboult/RR/refs/heads/main/SunLadder.png">
 
         <style>
           /* 1. CSS VARIABLES FOR THEMES */
@@ -270,7 +267,7 @@ button:active, .btn:active {
           .score-grid input { text-align: center; margin-top: 0; padding: 0.5rem; font-size: 1.1rem; min-height: 54px; }
           
           .status-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.9rem; font-weight: bold; }
-          .status-active { background-color: var(--row-checked-bg); color: ar(--text-color); border: 1px solid var(--text-color); }
+          .status-active { background-color: var(--row-checked-bg); color: var(--text-color); border: 1px solid var(--text-color); }
           .status-inactive { background-color: #fff3bf; color: #856404; }
           .status-msg { margin-top: 0.75rem; text-align: center; font-size: 1rem; font-weight: 600; }
           
@@ -392,8 +389,16 @@ button:active, .btn:active {
           <div class="card">
             <h3 style="margin-top:0; color:var(--btn-danger-bg);">⚙️ Admin Controls</h3>
             
-            <a id="adminSheetLink" href="#" target="_blank" class="btn-main" style="display:block; padding:0.75rem; margin-bottom:1rem; border-radius:0.5rem;">📝 Edit Score Data Sheet</a>
-            
+            <a id="adminSheetLink" href="#" target="_blank" class="btn-main" style="display:block; padding:0.75rem; margin-bottom:1rem; border-radius:0.5rem; text-align:center;">📝 Edit Score Data Sheet</a>
+
+            <!-- QUICK ACTIVE / INACTIVE TOGGLE LIST -->
+            <div class="card" style="margin-bottom:1rem; background: var(--bg-color);">
+              <h4 style="margin:0 0 0.5rem 0;">👥 Quick Active / Inactive Manager</h4>
+              <label><b>Select Group:</b></label>
+              <select id="adminStatusGroupSelect" onchange="loadAdminPlayerStatus()"><option value="">-- Choose Group --</option></select>
+              <div id="adminPlayerStatusList" style="margin-top:0.75rem; max-height:300px; overflow-y:auto; border-radius:0.5rem; border:2px solid var(--row-border);"><i>Select a group above...</i></div>
+            </div>
+
             <label style="font-size:1.1rem; font-weight:bold;">Reschedule Based on Check-Ins:</label>
             <select id="adminSchedSelect"><option value="">-- Select Schedule Tab --</option></select>
             <button class="btn-main" onclick="runReschedule()">Rebuild Checked-In Courts</button>
@@ -403,6 +408,17 @@ button:active, .btn:active {
             <button class="btn-sub" onclick="runAdmin('processWeeklyScores', true)">End of Week (Shift Scores)</button>
             <button class="btn-sub" onclick="runAdmin('processWeeklyScores', false)">Correct Scores (No Shift)</button>
             <button class="btn-sub" onclick="getAdminPdf()">Download PDF Schedules</button>
+
+            <!-- NEW PLAYER FORM MOVED TO END OF ADMIN PAGE -->
+            <div class="card" style="margin-top:1.5rem; margin-bottom:1rem; background: var(--bg-color);">
+              <h4 style="margin:0 0 0.5rem 0;">➕ Add New Player</h4>
+              <input type="text" id="adminRegFirst" placeholder="First Name">
+              <input type="text" id="adminRegLast" placeholder="Last Name">
+              <input type="tel" id="adminRegPhone" placeholder="Phone Number">
+              <input type="email" id="adminRegEmail" placeholder="Email">
+              <select id="adminRegGroup"><option value="">-- Select Group --</option></select>
+              <button class="btn-main" style="margin-top:0.75rem;" onclick="submitAdminRegistration()">Add Player</button>
+            </div>
             
             <button class="btn-danger desktop-only" style="margin-top:2rem;" onclick="if(confirm('🚨 WARNING: Are you sure you want to start a new season? This will permanently wipe all current scores in W1-W10.')) runAdmin('startNewSeason')">🚨 Start New Season</button>
 
@@ -411,7 +427,7 @@ button:active, .btn:active {
         </div>
 
         <script>
-        const CURRENT_APP_VERSION = "1.0.3"; // Match the version in Code.gs
+        const CURRENT_APP_VERSION = "1.0.4"; 
 
          function checkAppVersion() {
             google.script.run.withSuccessHandler(serverVersion => {
@@ -552,10 +568,11 @@ window.addEventListener('visibilitychange', () => {
             const sel2 = document.getElementById('adminSchedSelect');
             sel1.innerHTML = '<option value="">-- Choose Group --</option>';
             sel2.innerHTML = '<option value="">-- Choose Group --</option>';
-            sheets.forEach(s => {
-              sel1.innerHTML += \`<option value="\${s}">\${s}</option>\`;
-              sel2.innerHTML += \`<option value="\${s}">\${s}</option>\`;
-            });
+            sheets.forEach(function(s) {
+    var cleanName = String(s).replace(/^Sched[\s_-]*/i, '').trim();
+    sel1.innerHTML += '<option value="' + s + '">' + cleanName + '</option>';
+    sel2.innerHTML += '<option value="' + s + '">' + cleanName + '</option>';
+  });
           }
           
           function populateGroups(groups) {
@@ -563,10 +580,11 @@ window.addEventListener('visibilitychange', () => {
             const sel2 = document.getElementById('regGroup');
             sel1.innerHTML = '<option value="">-- Choose Group --</option>';
             sel2.innerHTML = '<option value="">-- Select Group --</option>';
-            groups.forEach(g => {
-              sel1.innerHTML += \`<option value="\${g}">\${g}</option>\`;
-              sel2.innerHTML += \`<option value="\${g}">\${g}</option>\`;
-            });
+            groups.forEach(function(g) {
+    sel1.innerHTML += '<option value="' + g + '">' + g + '</option>';
+    if (sel2) sel2.innerHTML += '<option value="' + g + '">' + g + '</option>';
+    if (sel3) sel3.innerHTML += '<option value="' + g + '">' + g + '</option>';
+  });
           }
 
           function loadCheckInPlayers() {
@@ -684,57 +702,68 @@ window.addEventListener('visibilitychange', () => {
             google.script.run.withSuccessHandler(() => { lookupPhone(); }).togglePlayerStatus(document.getElementById('phoneInput').value);
           }
 
-          function saveScores() {
-            if (!currentPlayerData || !currentPlayerData.foursome) return;
-            let scoresMap = {};
-            currentPlayerData.foursome.forEach(p => {
-              scoresMap[p.name] = {
-                g1: document.getElementById('g1_' + p.name).value,
-                g2: document.getElementById('g2_' + p.name).value,
-                g3: document.getElementById('g3_' + p.name).value
-              };
-            });
-            document.getElementById('phoneStatus').innerText = "Submitting scores...";
-            google.script.run.withSuccessHandler(res => { document.getElementById('phoneStatus').innerText = res; })
-              .submitCourtScores({ groupName: currentPlayerData.groupName, court: currentPlayerData.court, submitter: currentPlayerData.playerName, scores: scoresMap });
-          }
+function saveScores() {
+  if (!currentPlayerData || !currentPlayerData.foursome) return;
+  let scoresMap = {};
+  currentPlayerData.foursome.forEach(p => {
+    scoresMap[p.name] = {
+      g1: document.getElementById('g1_' + p.name).value,
+      g2: document.getElementById('g2_' + p.name).value,
+      g3: document.getElementById('g3_' + p.name).value
+    };
+  });
+  
+  document.getElementById('phoneStatus').innerText = "Submitting scores...";
+  google.script.run
+    .withSuccessHandler(res => {
+      document.getElementById('phoneStatus').innerText = res;
+    })
+    .submitCourtScores({
+      groupName: currentPlayerData.groupName,
+      court: currentPlayerData.court,
+      scores: scoresMap,
+      submitter: currentPlayerData.playerName
+    });
+}
 
-          function showRegistration() {
-            document.getElementById('phoneEntrySection').style.display = "none";
-            document.getElementById('registrationSection').style.display = "block";
-            document.getElementById('phoneStatus').innerText = "";
-          }
-          function cancelRegistration() {
-            document.getElementById('registrationSection').style.display = "none";
-            document.getElementById('phoneEntrySection').style.display = "block";
-          }
-          function submitRegistration() {
-            let info = {
-              first: document.getElementById('regFirst').value,
-              last: document.getElementById('regLast').value,
-              phone: document.getElementById('regPhone').value,
-              email: document.getElementById('regEmail').value,
-              group: document.getElementById('regGroup').value
-            };
-            document.getElementById('phoneStatus').innerText = "Registering...";
-            google.script.run.withSuccessHandler(res => {
-              document.getElementById('phoneStatus').innerText = res;
-              if (res.includes("Success")) {
-                document.getElementById('phoneInput').value = info.phone;
-                cancelRegistration();
-                lookupPhone();
-              }
-            }).addNewUser(info);
-          }
+function showRegistration() {
+  document.getElementById('phoneEntrySection').style.display = "none";
+  document.getElementById('registrationSection').style.display = "block";
+}
 
-          function loadRankingsAndSched() {
-            const groupName = document.getElementById('groupViewerSelect').value;
-            if (!groupName) return;
-            document.getElementById('viewerStatus').innerText = "Loading data...";
-            google.script.run.withSuccessHandler(renderRankingsAndSched).getRankingsAndSchedData(groupName);
-          }
+function cancelRegistration() {
+  document.getElementById('registrationSection').style.display = "none";
+  document.getElementById('phoneEntrySection').style.display = "block";
+}
 
-          function renderRankingsAndSched(data) {
+function submitRegistration() {
+  let data = {
+    first: document.getElementById('regFirst').value,
+    last: document.getElementById('regLast').value,
+    phone: document.getElementById('regPhone').value,
+    email: document.getElementById('regEmail').value,
+    group: document.getElementById('regGroup').value
+  };
+  
+  document.getElementById('phoneStatus').innerText = "Registering...";
+  google.script.run
+    .withSuccessHandler(res => {
+      document.getElementById('phoneStatus').innerText = res;
+      setTimeout(cancelRegistration, 2000);
+    })
+    .addNewUser(data);
+}
+
+function loadRankingsAndSched() {
+  const group = document.getElementById('groupViewerSelect').value;
+  if (!group) return;
+  
+  document.getElementById('viewerStatus').innerText = "Loading schedule and rankings...";
+  google.script.run
+    .withSuccessHandler(renderRankingsAndSched)
+    .getRankingsAndSchedData(group);
+}
+         function renderRankingsAndSched(data) {
             document.getElementById('viewerStatus').innerText = "";
             let html = "";
             let wLabel = data.weekNum; 
