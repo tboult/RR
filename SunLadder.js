@@ -7,7 +7,7 @@ const MAX_POINTS_PER_WEEK = 45;
 
 // Increment this string whenever you release an update
 function getAppVersion() {
-  return "1.0.3"; 
+  return "1.0.4"; 
 }
 
 
@@ -237,17 +237,18 @@ function getCheckInHtmlOutput() {
 }
 
 /* Hover state (slightly deeper light green) */
-button:hover, .btn:hover , .btn-main{ {
+button:hover, .btn:hover, .btn-main:hover {
   background-color: #c8e6c9; 
   color: #0d3b0e;
 }
 
 /* Active / Pressed state */
-button:active, .btn:active {
+button:active, .btn:active, .btn-main:active {
   background-color: #a5d6a7;
 }
 
-          //.btn-main { background-color: var(--btn-main-bg); color: var(--btn-main-text); font-weight: bold; border: none; cursor: pointer; margin-top: 0.75rem; display: inline-block; ////text-align: center; text-decoration: none; }
+/* .btn-main { background-color: var(--btn-main-bg); color: var(--btn-main-text); font-weight: bold; border: none; cursor: pointer; margin-top: 0.75rem; display: inline-block; text-align: center; text-decoration: none; } */
+
           .btn-sub { background-color: var(--btn-sub-bg); color: var(--btn-sub-text); font-weight: bold; border: none; cursor: pointer; }
           .btn-danger { background-color: var(--btn-danger-bg); color: var(--btn-danger-text); font-weight: bold; border: none; cursor: pointer; }
           
@@ -354,11 +355,11 @@ button:active, .btn:active {
         <div id="helpTab" class="tab-content">
         <!-- ACCESSIBILITY CONTROLS -->
         <div class="access-panel">
-            <h3 style="margin-top:0;">📱 Adjust font sizes and Contrast </p>
+            <h3 style="margin-top:0;">📱 Adjust sizes/ Contrast <\h3><p>
           <button id="btn-size-normal" class="active" onclick="applyTextSize('normal')">Bold</button>
           <button id="btn-size-large" onclick="applyTextSize('large')">Large</button>
           <button id="btn-size-huge" onclick="applyTextSize('huge')">HUGE</button>
-          <button id="btn-contrast-toggle" onclick="toggleContrast()">High Contrast</button>
+          <button id="btn-contrast-toggle" onclick="toggleContrast()">High Contrast</button></p>
         </div>
 
           <div class="card">
@@ -394,11 +395,21 @@ button:active, .btn:active {
             <!-- QUICK ACTIVE / INACTIVE TOGGLE LIST -->
             <div class="card" style="margin-bottom:1rem; background: var(--bg-color);">
               <h4 style="margin:0 0 0.5rem 0;">👥 Quick Active / Inactive Manager</h4>
+              
               <label><b>Select Group:</b></label>
-              <select id="adminStatusGroupSelect" onchange="loadAdminPlayerStatus()"><option value="">-- Choose Group --</option></select>
-              <div id="adminPlayerStatusList" style="margin-top:0.75rem; max-height:300px; overflow-y:auto; border-radius:0.5rem; border:2px solid var(--row-border);"><i>Select a group above...</i></div>
+              <select id="adminStatusGroupSelect" onchange="loadAdminPlayerStatus()" style="margin-bottom: 0.5rem;">
+                <option value="">-- Choose Group --</option>
+              </select>
+              
+              <!-- ✨ NEW SEARCH BAR ✨ -->
+              <input type="text" id="adminPlayerSearch" onkeyup="filterAdminPlayers()" placeholder="🔍 Search names..." style="width: 100%; padding: 0.5rem; margin-bottom: 0.75rem; border-radius: 0.25rem; border: 1px solid #ccc; box-sizing: border-box;">
+              
+              <div id="adminPlayerStatusList" style="margin-top:0.25rem; max-height:60vh; overflow-y:auto; border-radius:0.5rem; border:2px solid var(--row-border);">
+                <i>Select a group above...</i>
+              </div>
             </div>
-
+            
+            </div>
             <label style="font-size:1.1rem; font-weight:bold;">Reschedule Based on Check-Ins:</label>
             <select id="adminSchedSelect"><option value="">-- Select Schedule Tab --</option></select>
             <button class="btn-main" onclick="runReschedule()">Rebuild Checked-In Courts</button>
@@ -426,144 +437,123 @@ button:active, .btn:active {
           </div>
         </div>
 
-        <script>
+<script>
         const CURRENT_APP_VERSION = "1.0.4"; 
 
-         function checkAppVersion() {
-            google.script.run.withSuccessHandler(serverVersion => {
-    const savedVersion = localStorage.getItem('app_installed_version');
-    
-    // If phone has an older version stored, update version and force reload
-    if (savedVersion !== serverVersion) {
-      localStorage.setItem('app_installed_version', serverVersion);
-      
-      // Clear non-essential cached UI state if needed, then hard refresh
-      window.location.reload(true);
-    }
-  }).getAppVersion();
-}
-async function forceResetApp() {
-  if (confirm("This will clear cached app data and force-download the latest version. Continue?")) {
-    
-    // 1. Clear stored browser data
-    localStorage.clear();
-    sessionStorage.clear();
+        function checkAppVersion() {
+          google.script.run.withSuccessHandler(serverVersion => {
+            try {
+              const savedVersion = localStorage.getItem('app_installed_version');
+              if (savedVersion !== serverVersion) {
+                localStorage.setItem('app_installed_version', serverVersion);
+                window.location.reload(true);
+              }
+            } catch (e) {
+              console.warn("Storage blocked, skipping version check.");
+            }
+          }).getAppVersion();
+        }
 
-    // 2. Unregister any service workers if present
-    if ('serviceWorker' in navigator) {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      for (let registration of registrations) {
-        await registration.unregister();
-      }
-    }
+        async function forceResetApp() {
+          if (confirm("This will clear cached app data and force-download the latest version. Continue?")) {
+            try {
+              localStorage.clear();
+              sessionStorage.clear();
+            } catch(e) {}
+            if ('serviceWorker' in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              for (let registration of registrations) { await registration.unregister(); }
+            }
+            if ('caches' in window) {
+              const cacheNames = await caches.keys();
+              for (let name of cacheNames) { await caches.delete(name); }
+            }
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('reset_ts', Date.now());
+            window.location.href = currentUrl.toString();
+          }
+        }
 
-    // 3. Clear Cache API storage
-    if ('caches' in window) {
-      const cacheNames = await caches.keys();
-      for (let name of cacheNames) {
-        await caches.delete(name);
-      }
-    }
+        window.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') checkAppVersion();
+        });
 
-    // 4. Reload page with a cache-busting query parameter
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('reset_ts', Date.now());
-    window.location.href = currentUrl.toString();
-  }
-}
-
-// Add this to your existing window.onload function:
-const originalOnload = window.onload;
-window.onload = function() {
-  checkAppVersion();
-  if (originalOnload) originalOnload();
-};
-
-// Also check for updates whenever the user re-opens the app tab on mobile
-window.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    checkAppVersion();
-  }
-});
-          // --- ACCESSIBILITY LOGIC ---
-          const htmlRoot = document.documentElement;
-          const body = document.body;
-          // Check if the screen width is mobile-sized (e.g., under 768px)
-          const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
-          // Serve different ratios based on the device
-          const sizeRatios = isMobile 
-              ? { normal: '100%', large: '125%', huge: '150%' } // Desktop sizes
-              : { normal: '180%', large: '240%', huge: '260%' };  // Mobile sizes
-
-//           const sizeRatios = { normal: '150%', large: '200%', huge: '250%' };                                                                  
-  
+        const htmlRoot = document.documentElement;
+        const body = document.body;
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        const sizeRatios = isMobile ? { normal: '100%', large: '125%', huge: '150%' } : { normal: '180%', large: '240%', huge: '260%' };  
           
-          function applyTextSize(size) {
-            htmlRoot.style.fontSize = sizeRatios[size];
-            localStorage.setItem('pwa-text-size', size);
-            document.getElementById('btn-size-normal').classList.remove('active');
-            document.getElementById('btn-size-large').classList.remove('active');
-            document.getElementById('btn-size-huge').classList.remove('active');
-            document.getElementById('btn-size-' + size).classList.add('active');
-          }
+        function applyTextSize(size) {
+          htmlRoot.style.fontSize = sizeRatios[size];
+          try { localStorage.setItem('pwa-text-size', size); } catch(e) {}
+          document.getElementById('btn-size-normal').classList.remove('active');
+          document.getElementById('btn-size-large').classList.remove('active');
+          document.getElementById('btn-size-huge').classList.remove('active');
+          document.getElementById('btn-size-' + size).classList.add('active');
+        }
 
-          function toggleContrast() {
-            const isHigh = body.classList.toggle('high-contrast');
-            localStorage.setItem('pwa-contrast', isHigh ? 'high' : 'normal');
-            document.getElementById('btn-contrast-toggle').classList.toggle('active', isHigh);
-          }
+        function toggleContrast() {
+          const isHigh = document.body.classList.toggle('high-contrast');
+          try { localStorage.setItem('pwa-contrast', isHigh ? 'high' : 'normal'); } catch(e) {}
+          document.getElementById('btn-contrast-toggle').classList.toggle('active', isHigh);
+        }
 
-          function initAccessibility() {
-            const savedSize = localStorage.getItem('pwa-text-size') || 'normal';
-            const savedContrast = localStorage.getItem('pwa-contrast') || 'normal';
-            applyTextSize(savedSize);
-            if (savedContrast === 'high') { toggleContrast(); }
-          }
-          // ---------------------------
+        function initAccessibility() {
+          let savedSize = 'normal';
+          let savedContrast = 'normal';
+          try {
+            savedSize = localStorage.getItem('pwa-text-size') || 'normal';
+            savedContrast = localStorage.getItem('pwa-contrast') || 'normal';
+          } catch(e) {}
+          applyTextSize(savedSize);
+          if (savedContrast === 'high') { document.body.classList.add('high-contrast'); document.getElementById('btn-contrast-toggle').classList.add('active'); }
+        }
 
-          let currentPlayerData = null;
-          let tapCount = 0;
-          let tapTimer = null;
+        let currentPlayerData = null;
+        let tapCount = 0;
+        let tapTimer = null;
 
-          window.onload = function() {
-            initAccessibility();
-            google.script.run.withSuccessHandler(populateSheets).getSchedTabNames();
-            google.script.run.withSuccessHandler(populateGroups).getAvailableGroups();
-            google.script.run.withSuccessHandler(url => document.getElementById('adminSheetLink').href = url).getAdminSheetUrl();
-            
+        window.onload = function() {
+          checkAppVersion();
+          initAccessibility();
+          
+          google.script.run.withSuccessHandler(populateSheets).getSchedTabNames();
+          google.script.run.withSuccessHandler(populateGroups).getAvailableGroups();
+          google.script.run.withSuccessHandler(url => document.getElementById('adminSheetLink').href = url).getAdminSheetUrl();
+          
+          try {
             const savedPhone = localStorage.getItem('foursome_phone');
             if (savedPhone) {
               document.getElementById('phoneInput').value = savedPhone;
               lookupPhone();
             }
-          };
+          } catch(e) {
+            console.warn("Phone storage blocked.");
+          }
+        };
 
-
-      function handleSecretTap(e) {
-          if (e && e.cancelable) e.preventDefault(); // Prevents touch-to-click event duplication
+        function handleSecretTap(e) {
+          if (e && e.cancelable) e.preventDefault(); 
           tapCount++;
           clearTimeout(tapTimer);
-  
           if (tapCount >= 5) {
               document.getElementById('tabAdminBtn').style.display = 'block';
               document.getElementById('adminStatus').innerText = "Admin unlocked!";
               tapCount = 0;
           }
-  
           tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
-      }          
+        }          
 
-          function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById(tab + 'Tab').classList.add('active');
-            let btnId = tab === 'ranksched' ? 'tab3Btn' : tab === 'checkin' ? 'tab1Btn' : tab === 'phone' ? 'tab2Btn' : tab === 'help' ? 'tab4Btn' : 'tabAdminBtn';
-            document.getElementById(btnId).classList.add('active');
-          }
+        function switchTab(tab) {
+          document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+          
+          document.getElementById(tab + 'Tab').classList.add('active');
+          let btnId = tab === 'ranksched' ? 'tab3Btn' : tab === 'checkin' ? 'tab1Btn' : tab === 'phone' ? 'tab2Btn' : tab === 'help' ? 'tab4Btn' : 'tabAdminBtn';
+          document.getElementById(btnId).classList.add('active');
+        }
 
-          function populateSheets(sheets) {
+        function populateSheets(sheets) {
             const sel1 = document.getElementById('sheetSelect');
             const sel2 = document.getElementById('adminSchedSelect');
             sel1.innerHTML = '<option value="">-- Choose Group --</option>';
@@ -575,18 +565,98 @@ window.addEventListener('visibilitychange', () => {
   });
           }
           
-          function populateGroups(groups) {
-            const sel1 = document.getElementById('groupViewerSelect');
-            const sel2 = document.getElementById('regGroup');
-            sel1.innerHTML = '<option value="">-- Choose Group --</option>';
-            sel2.innerHTML = '<option value="">-- Select Group --</option>';
-            groups.forEach(function(g) {
+
+function populateGroups(groups) {
+  const sel1 = document.getElementById('groupViewerSelect');
+  const sel2 = document.getElementById('regGroup');
+  const sel3 = document.getElementById('adminRegGroup');
+  const sel4 = document.getElementById('adminStatusGroupSelect');
+  
+  sel1.innerHTML = '<option value="">-- Choose Group --</option>';
+  if(sel2) sel2.innerHTML = '<option value="">-- Select Group --</option>';
+  if(sel3) sel3.innerHTML = '<option value="">-- Select Group --</option>';
+  if(sel4) sel4.innerHTML = '<option value="">-- Select Group --</option>';
+  
+  groups.forEach(function(g) {
     sel1.innerHTML += '<option value="' + g + '">' + g + '</option>';
     if (sel2) sel2.innerHTML += '<option value="' + g + '">' + g + '</option>';
     if (sel3) sel3.innerHTML += '<option value="' + g + '">' + g + '</option>';
+    if (sel4) sel4.innerHTML += '<option value="' + g + '">' + g + '</option>';
   });
-          }
+}
 
+// --- ADMIN SPECIFIC FUNCTIONS ---
+
+function loadAdminPlayerStatus() {
+  const group = document.getElementById('adminStatusGroupSelect').value;
+  if(!group) return;
+  
+  document.getElementById('adminStatus').innerText = "Loading players...";
+  google.script.run
+    .withSuccessHandler(renderAdminPlayerStatus)
+    .getAdminPlayersByGroup(group);
+}
+
+function renderAdminPlayerStatus(players) {
+  document.getElementById('adminStatus').innerText = "";
+  const container = document.getElementById('adminPlayerStatusList');
+  container.innerHTML = "";
+  
+  if(players.length === 0) {
+    container.innerHTML = "<p style='padding:0.75rem; text-align:center;'>No players found.</p>";
+    return;
+  }
+  
+  players.forEach(p => {
+    let div = document.createElement('div');
+    div.className = "player-row " + (p.status === "ACTIVE" ? "checked" : "");
+    
+    // Using standard quotes and + instead of backticks to prevent GAS syntax errors
+    div.innerHTML = '<span class="player-name">' + p.name + '</span>' +
+                    '<button class="btn-sub" ' +
+                    'style="min-width:auto; min-height:auto; padding:0.4rem 0.75rem; margin:0;" ' +
+                    'onclick="toggleAdminStatus(\\'' + p.phone + '\\', this)">' + 
+                    p.status + 
+                    '</button>';
+                    
+    container.appendChild(div);
+  });
+}
+
+function toggleAdminStatus(phone, buttonElement) {
+  buttonElement.innerText = "...";
+  google.script.run
+    .withSuccessHandler(newStatus => {
+      buttonElement.innerText = newStatus;
+      if(newStatus === "ACTIVE") {
+        buttonElement.parentElement.classList.add('checked');
+      } else {
+        buttonElement.parentElement.classList.remove('checked');
+      }
+    })
+    .togglePlayerStatus(phone);
+}
+
+function submitAdminRegistration() {
+  let data = {
+    first: document.getElementById('adminRegFirst').value,
+    last: document.getElementById('adminRegLast').value,
+    phone: document.getElementById('adminRegPhone').value,
+    email: document.getElementById('adminRegEmail').value,
+    group: document.getElementById('adminRegGroup').value
+  };
+  
+  document.getElementById('adminStatus').innerText = "Adding player...";
+  google.script.run
+    .withSuccessHandler(res => {
+      document.getElementById('adminStatus').innerText = res;
+      document.getElementById('adminRegFirst').value = "";
+      document.getElementById('adminRegLast').value = "";
+      document.getElementById('adminRegPhone').value = "";
+      document.getElementById('adminRegEmail').value = "";
+    })
+    .addNewUser(data);
+}
           function loadCheckInPlayers() {
             const sheet = document.getElementById('sheetSelect').value;
             if (!sheet) return;
@@ -809,6 +879,27 @@ function loadRankingsAndSched() {
                 \`<a download="Schedule.pdf" href="data:application/pdf;base64,\${b64}" style="display:inline-block; margin-top:1rem; padding:0.75rem; background:var(--btn-main-bg); color:var(--btn-main-text); border-radius:0.5rem; text-decoration:none;">⬇ Download PDF Ready</a>\`;
             }).webExportSchedulePdf();
           }
+
+          function filterAdminPlayers() {
+          const input = document.getElementById('adminPlayerSearch');
+          const filter = input.value.toLowerCase();
+          const list = document.getElementById('adminPlayerStatusList');
+          
+          // Grabs all the direct child elements (the individual player rows)
+          const rows = list.children; 
+          
+          for (let i = 0; i < rows.length; i++) {
+            // Ignore the initial "Select a group above..." italics text
+            if (rows[i].tagName === 'I') continue; 
+            
+            const text = rows[i].textContent || rows[i].innerText;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+              rows[i].style.display = ""; // Show matching row
+            } else {
+              rows[i].style.display = "none"; // Hide non-matching row
+            }
+          }
+        }
         </script>
       </body>
     </html>
@@ -1668,4 +1759,25 @@ function getRankingsAndSchedData(groupName) {
     }
   }
   return { sched: schedList, rankings: rankingList, weekNum: currentWeek };
+}
+
+function getAdminPlayersByGroup(groupName) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const scoreSheet = ss.getSheetByName("Score Data");
+  const data = scoreSheet.getDataRange().getValues();
+  const col = buildColMap(data[0]);
+  
+  let players = [];
+  for(let i = 1; i < data.length; i++) {
+    let g = (col.group !== undefined && data[i][col.group]) ? data[i][col.group].toString().trim() : "";
+    if(g.toLowerCase() === groupName.toLowerCase()) {
+      let name = (col.name !== undefined && data[i][col.name]) ? data[i][col.name] : (data[i][col.first] + " " + data[i][col.last]).trim();
+      let phone = data[i][col.phone] || "";
+      let status = (data[i][col.status] || "ACTIVE").toString().toUpperCase().trim();
+      players.push({name: name, phone: phone, status: status});
+    }
+  }
+  // Sort alphabetically by name
+  players.sort((a,b) => a.name.localeCompare(b.name));
+  return players;
 }
