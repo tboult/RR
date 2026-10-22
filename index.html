@@ -913,17 +913,6 @@
     }
 
 
-    function getAudioContext() {
-        if (!sharedAudioCtx) {
-            sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (sharedAudioCtx.state === 'suspended') {
-            sharedAudioCtx.resume();
-        }
-
-        return sharedAudioCtx;
-    }    
-
 
 
      function playSound() {
