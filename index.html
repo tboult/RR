@@ -581,34 +581,34 @@
         </h1>        
       </div>
       
-      <!-- LINE 1: #PLAYERS -->
-      <div class="input-group">
-        <label for="numPlayers">#Players</label>
-        <input type="number" id="numPlayers" value="8" min="1" onchange="saveSettings()" oninput="saveSettings()">
-      </div>
-
-      <!-- LINE 2: GAME # AND RESET BUTTON -->
-      <div class="input-group">
-        <label for="gameCount">Game #</label>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <input type="number" id="gameCount" value="1" min="1" onchange="onGameCountInputChange()" oninput="onGameCountInputChange()" style="flex: 1;">
-          <button type="button" class="btn-small btn-secondary" onclick="resetGameCount()" style="white-space: nowrap; height: 100%; padding: 8px 16px;">Reset Game #</button>
-        </div>
-      </div>
-
-      <!-- LINE 3: TIMER AND MAX COURTS -->
+      <!-- LINE 1: #PLAYERS & TIMER (MINUTES) -->
       <div class="input-grid">
+        <div class="input-group">
+          <label for="numPlayers">#Players</label>
+          <input type="number" id="numPlayers" value="8" min="1" onchange="saveSettings()" oninput="saveSettings()">
+        </div>
         <div class="input-group">
           <label for="playTime">Timer (Minutes)</label>
           <input type="number" id="playTime" min="1" onchange="onPlayTimeInputChange()" oninput="onPlayTimeInputChange()">
         </div>
+      </div>
 
+      <!-- LINE 2: GAME # (WITH RESET) & MAX COURTS -->
+      <div class="input-grid">
+        <div class="input-group">
+          <label for="gameCount">Game #</label>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <input type="number" id="gameCount" value="1" min="1" onchange="onGameCountInputChange()" oninput="onGameCountInputChange()" style="flex: 1; min-width: 0;">
+            <button type="button" class="btn-small btn-secondary" onclick="resetGameCount()" style="white-space: nowrap; padding: 6px 8px; font-size: 0.85rem;">Reset</button>
+          </div>
+        </div>
         <div class="input-group">
           <label for="maxCourts">Max Courts</label>
           <input type="number" id="maxCourts" min="1" onchange="generateCheckboxes(); saveSettings();" oninput="saveSettings()">
         </div>
       </div>
 
+      <!-- LINE 3: END SOUND -->
       <div class="input-group">
         <label for="soundSelect">End Sound</label>
         <select id="soundSelect" onchange="saveSettings(); testSound();">
@@ -618,6 +618,7 @@
           <option value="beep">Beep (Double Pitch)</option>
           <option value="chime">Chime (Bright Bell)</option>
           <option value="success">Success Arpeggio</option>
+          <option value="radar">Radar Pinging</option>
           <option value="error">Low Error Buzz</option>                              
         </select>
       </div>      
@@ -633,11 +634,16 @@
       <!-- START ASSIGNMENTS BUTTON -->
       <button class="btn" style="margin-top: 4px; margin-bottom: 8px;" onclick="startAssignments()">Do Assignments</button>
 
-      <!-- Small Control Buttons Row -->
+      <!-- ROW 1: INSTALL / UNINSTALL -->
       <div class="btn-row">
         <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="triggerInstallPrompt()">📱 Install App</button>
         <button class="btn-small btn-secondary" style="background-color: #17a2b8;" onclick="resetAndUninstallApp()">🗑️ Reset / Uninstall</button>
-        <button class="btn-small btn-secondary" style="background-color: #47a28;" onclick="toggleHelp()">❓ Help</button>
+      </div>
+
+      <!-- ROW 2: HELP & CUSTOMIZE / SHARE APP -->
+      <div class="btn-row">
+        <button class="btn-small btn-secondary" style="background-color: #47a2b8;" onclick="toggleHelp()">❓ Help & Customize</button>
+        <button class="btn-small btn-secondary" style="background-color: #28a745;" onclick="shareAppLink()">🔗 Share App</button>
       </div>
 
       <!-- Expandable Help Box -->
@@ -647,7 +653,7 @@
         <p><strong>How to Use:</strong></p>
         <ul>
           <li><strong>#Players:</strong> Enter total players present. Calculates needed courts and Bye breaks automatically.</li>
-          <li><strong>Game #:</strong> Increments after each round. Tap <em>Reset Game #</em> to set back to 1.</li>
+          <li><strong>Game #:</strong> Increments after each round. Tap <em>Reset</em> to set back to 1.</li>
           <li><strong>Timer (Minutes):</strong> Built-in match countdown clock with repeating audio and vibration alerts.</li>
           <li><strong>Max Courts:</strong> Set total courts available at your facility.</li>
           <li><strong>Select Courts:</strong> Check off courts open for play.</li>
@@ -655,6 +661,33 @@
           <li>Tap <em>anywhere on screen</em> to advance to the next player assignment.</li>
           <li><strong>Offline Use / Home Screen:</strong> Tap <strong>"📱 Install App"</strong> above to save RandomRobin directly to your phone for quick offline access!</li>
         </ul>
+
+        <!-- SHARE APP SECTION -->
+        <div style="margin-top: 12px; border-top: 1px dashed #ccc; padding-top: 10px; text-align: center;">
+          <h4 style="margin: 0 0 6px 0; color: #007bff; font-size: 1rem;">📱 Share RandomRobin</h4>
+          <p style="margin-bottom: 8px; font-size: 0.85rem;">
+            RandomRobin isn't in app stores, but you can share the link or scan the QR code to open it on any phone:
+          </p>
+
+          <!-- Direct Sharing Buttons -->
+          <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+            <button type="button" class="btn-small" style="background-color: #28a745; color: white; flex: 1; padding: 10px; font-size: 0.95rem;" onclick="shareTextMsg()">
+              💬 Text Link
+            </button>
+            <button type="button" class="btn-small" style="background-color: #007bff; color: white; flex: 1; padding: 10px; font-size: 0.95rem;" onclick="shareEmail()">
+              ✉️ Email Link
+            </button>
+          </div>
+
+          <button type="button" class="btn-small btn-secondary" style="width: 100%; padding: 8px; font-size: 0.9rem; margin-bottom: 10px;" onclick="shareAppLink()">
+            🔗 Open Full Share Sheet
+          </button>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <img src="http://tboult.github.io/RR/RR-QR.png" alt="Scan QR Code to open RandomRobin" style="max-width: 160px; height: auto; border-radius: 8px; border: 1px solid #ccc; padding: 6px; background: #ffffff;">
+            <a href="http://tboult.github.io/RR" target="_blank" style="font-size: 0.85rem; color: #007bff; margin-top: 6px; font-weight: bold; text-decoration: none;">http://tboult.github.io/RR</a>
+          </div>
+        </div>
 
         <!-- CUSTOM BRANDING FIELDS -->
         <div class="input-group" style="margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 8px;">
@@ -717,7 +750,6 @@
     <!-- 6. Next Game Assignment -->
     <button class="btn-large btn-next-game" onclick="nextGame()">Next Game Assignment ➔</button>
   </div>
-
   <script>
     // APP CONSTANTS & STORAGE KEYS
     const APP_NAME = "RandomRobin";
@@ -1027,19 +1059,21 @@
       modal.classList.remove('hidden');
     }
 
-    /* --- SYNTHESIZED WEB AUDIO ENGINE --- */
+    let sharedAudioCtx = null;
     function getAudioContext() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
+        if (!sharedAudioCtx) {
+            sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (sharedAudioCtx.state === 'suspended') {
+            sharedAudioCtx.resume();
+        }
 
-    function playSound() {
+        return sharedAudioCtx;
+    }    
+
+
+
+     function playSound() {
       let selectedKey = 'buzzer';
       const selectElem = document.getElementById('soundSelect');
       
@@ -1054,11 +1088,15 @@
       const maxVol = 10; // Cranked up base volume
       try {
         const ctx = getAudioContext();
+        
+        // Ensure context wakes up synchronously on interaction
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+
         const now = ctx.currentTime;
 
-
-
-if (selectedKey === 'radar') {
+        if (selectedKey === 'radar') {
           // 1. Create a compressor to slam the volume and prevent natural clipping roll-off
           const compressor = ctx.createDynamicsCompressor();
           compressor.threshold.value = -50;
@@ -1068,15 +1106,14 @@ if (selectedKey === 'radar') {
           compressor.release.value = 0.1;
           compressor.connect(ctx.destination);
 
-
-         // 2. Crank the master gain to extreme overdrive for MAXIMUM volume
+          // 2. Crank the master gain to extreme overdrive for MAXIMUM volume
           const masterGain = ctx.createGain();
-          masterGain.gain.value = 10.0; // Pushed to the absolute limit 
+          masterGain.gain.value = 10.0; 
           masterGain.connect(compressor);
 
           // 3. Timing variables (in seconds)
           const beepLength = 0.12; 
-          const gap = 0.15;        // 150ms between rapid beeps
+          const gap = 0.15; // 150ms between rapid beeps
 
           const playBeep = (time) => {
             const osc = ctx.createOscillator();
@@ -1085,7 +1122,8 @@ if (selectedKey === 'radar') {
             osc.type = 'square'; 
             osc.frequency.value = 2750; 
 
-            gain.gain.setValueAtTime(0, time);
+            // FIX: Set to 0.0001 instead of 0 to avoid Web Audio API exponential ramp crash
+            gain.gain.setValueAtTime(0.0001, time);
             gain.gain.linearRampToValueAtTime(1, time + 0.005); 
             gain.gain.exponentialRampToValueAtTime(0.01, time + beepLength); 
 
@@ -1096,8 +1134,6 @@ if (selectedKey === 'radar') {
             osc.stop(time + beepLength);
           };
 
-          // 3 bursts spaced exactly 0.5 seconds apart to perfectly fill the 1.5s loop!
-          
           // Burst 1 (Starts immediately)
           playBeep(now);
           playBeep(now + gap);
@@ -1114,29 +1150,27 @@ if (selectedKey === 'radar') {
           playBeep(now + mid2);
           playBeep(now + mid2 + gap);
           playBeep(now + mid2 + gap * 2);          
-      // Note: The app's triggerAlarm() already repeats this every 1.5 seconds!
-        
-    } else if (selectedKey === 'loudbuzzer') {
-        // Extremely Loud Buzzer (Harsh square wave + slight distortion)
-        const osc = ctx.createOscillator();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(150, now);
-    
-        // Pitch flutter for maximum annoyance/loudness
-        osc.frequency.linearRampToValueAtTime(160, now + 0.1);
-        osc.frequency.linearRampToValueAtTime(150, now + 0.2);
-        
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(1.0, now); // Maxed out
-        gain.gain.setValueAtTime(maxVol, now + 0.8);
-        gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
-    
-        osc.connect(gain);
-        gain.connect(ctx.destination); 
-        osc.start(now);
-        osc.stop(now + 1.0);
 
-    } else if (selectedKey === 'buzzer') {
+        } else if (selectedKey === 'loudbuzzer') {
+          // Extremely Loud Buzzer
+          const osc = ctx.createOscillator();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(150, now);
+      
+          osc.frequency.linearRampToValueAtTime(160, now + 0.1);
+          osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+          
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(1.0, now);
+          gain.gain.setValueAtTime(maxVol, now + 0.8);
+          gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
+      
+          osc.connect(gain);
+          gain.connect(ctx.destination); 
+          osc.start(now);
+          osc.stop(now + 1.0);
+
+        } else if (selectedKey === 'buzzer') {
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -1159,7 +1193,6 @@ if (selectedKey === 'radar') {
           osc2.stop(now + 1.2);
 
         } else if (selectedKey === 'alarm') {
-          // Rapid alternating siren
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
@@ -1195,7 +1228,6 @@ if (selectedKey === 'radar') {
           });
 
         } else if (selectedKey === 'chime') {
-          // Loud decaying chime/bell
           [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -1211,9 +1243,7 @@ if (selectedKey === 'radar') {
             osc.start(now + (idx * 0.1));
             osc.stop(now + (idx * 0.1) + 1.0);
           });
-
         } else if (selectedKey === 'success') {
-          // Ascending major chord
           [440, 554.37, 659.25, 880].forEach((freq, idx) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
@@ -1231,7 +1261,6 @@ if (selectedKey === 'radar') {
           });
 
         } else if (selectedKey === 'error') {
-          // Low buzzing tone
           const osc1 = ctx.createOscillator();
           const osc2 = ctx.createOscillator();
           const osc3 = ctx.createOscillator();            
@@ -1704,9 +1733,34 @@ if (selectedKey === 'radar') {
             }
         );
     }
-  </script>
 
-  <script>
+ function shareAppLink() {
+      const shareUrl = "http://tboult.github.io/RR";
+      const shareData = {
+        title: "RandomRobin",
+        text: "Check out RandomRobin for Pickleball court assignments!",
+        url: shareUrl
+      };
+
+      // Native mobile Web Share API (opens native iOS/Android share sheet)
+      if (navigator.share) {
+        navigator.share(shareData).catch((err) => {
+          // User canceled share
+        });
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        // Fallback for browsers without Web Share: copies to clipboard
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showAlert("App link copied to clipboard:\n" + shareUrl, "🔗 Link Copied");
+        }).catch(() => {
+          showAlert("Share this link with friends:\n" + shareUrl, "🔗 Share App");
+        });
+      } else {
+        // Ultimate fallback
+        showAlert("Share this link with friends:\n" + shareUrl, "🔗 Share App");
+      }
+    }
+    
+
     if ('caches' in window) {
       caches.keys().then((cacheNames) => {
         const activeCache = cacheNames.find(name => name.startsWith('random-robin')) || cacheNames[0];
@@ -1728,6 +1782,50 @@ if (selectedKey === 'radar') {
         window.location.reload();
       });
     }    
+
+
+// 1. Singleton Audio Context Handler
+let audioCtx = null;
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+  }
+  return audioCtx;
+}
+
+// 2. Synchronous Audio Unlock for iOS & Android
+function unlockAudioEngine() {
+  const ctx = getAudioContext();
+
+  // Force resume synchronously inside the user gesture handler
+  if (ctx.state === 'suspended') {
+    ctx.resume();
+  }
+
+  // Play a microscopic silent buffer SYNCHRONOUSLY (No .then() promise!)
+  try {
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+  } catch (e) {
+    console.error("Audio unlock error:", e);
+  }
+
+  // Clean up listeners after first successful touch
+  document.removeEventListener('touchstart', unlockAudioEngine, true);
+  document.removeEventListener('touchend', unlockAudioEngine, true);
+  document.removeEventListener('click', unlockAudioEngine, true);
+}
+
+// Attach gesture listeners immediately
+document.addEventListener('touchstart', unlockAudioEngine, true);
+document.addEventListener('touchend', unlockAudioEngine, true);
+document.addEventListener('click', unlockAudioEngine, true);
   </script>
+
+
 </body>
 </html>
