@@ -1,10 +1,11 @@
-const CACHE_NAME = 'RR-v0.981';
+const CACHE_NAME = 'RR-v0.982';
 
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './RR.png',
+    './RR.png',
+  './RR-QR.png',    
   './icon-192.png',
   './icon-512.png'
 ];
